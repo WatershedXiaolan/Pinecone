@@ -20,14 +20,12 @@ class Account:
     def restriction(self):
         """get restriction"""
         print('Getting restrictions...')
-        time.sleep(0.5)
         return self._restriction
     
     @restriction.setter
     def restriction(self, words):
         """set restriction"""
         print('Setting restrictions...')
-        time.sleep(0.5)
         self._restriction = words
         #print('restrictions: {}'.format(words))
     
@@ -234,7 +232,7 @@ class BankAccount(Account):
         return date(year, month, day)
 
 class GiftCard(Account):
-    def __init__(self, name, balance, cat):
+    def __init__(self, name, balance, cat=None):
         Account.__init__(self, name, balance)
         self._expiration = date(2100,1,1)
         self._code = None
@@ -268,10 +266,110 @@ class GiftCard(Account):
         """set access code"""
         self._code = c
 
+class CreditCard:
+    """
+    This is the credit card account object. 
+    """
+    def __init__(self, name, balance=0):
+        self.name = name
+        self._balance = balance
+        self._restriction = None
+        self._category = {}
+        self._alert = {}
+        self._annual_fee = 0
+        self._benefit = ''
+        self._ftf = True
+    
+    @property
+    def restriction(self):
+        """get restriction"""
+        print('Getting restrictions...')
+        return self._restriction
+    
+    @restriction.setter
+    def restriction(self, words):
+        """set restriction"""
+        print('Setting restrictions...')
+        self._restriction = words
+    
+    @property
+    def annual_fee(self):
+        """get annual fee"""
+        return self._annual_fee
+    
+    @annual_fee.setter
+    def annual_fee(self, fee):
+        """set annual fee"""
+        self._annual_fee = fee
+    
+    @property
+    def benefit(self):
+        """get benefit"""
+        return self._benefit
+    
+    @benefit.setter
+    def benefit(self, b):
+        """set benefit"""
+        self._benefit = b
+
+    @property
+    def ftf(self):
+        """get foreign transaction fee (boolen)"""
+        return self._ftf
+    
+    @benefit.setter
+    def benefit(self, b):
+        """set foreign transaction fee (boolen)"""
+        self._ftf = b
+
+    def add_cat(self, cat, pct=0, type_='cash', expire=date(2999,1,1), start=date(1000,1,1)):
+        """add cash back category"""
+        self._category[cat] = (pct, type_, expire, start)
+    
+    def get_cat(self, c=None):
+        """return cash back categories"""
+        if not c:
+            return self._category
+        else:
+            return self._category[c]
+    
+    def remove_expired_cat(self):
+        for key, value in self._category.items():
+            if value[2] < date.today(): # expired
+                self._category.pop(key)
+        return self._category
+
+
+    def add_alert(self, *awargs):
+        for key, value in awargs:
+            self._alert[key] = value
+
+    def get_all_alert(self):
+        return self._alert
+    
+    def print_alert(self, latest=False):
+        if len(self._alert)==0:
+            print("No alert available")
+        else: 
+            if latest:
+                key = min(self._alert)
+                print('Most recent alert: {}, {}'.format(key, self._alert[key]))
+            else:
+                for key, value in self._alert.items():
+                    print('Alert: {}, {}'.format(key, value))
+
+
+
+
+
+    
 
 def transfer(out_acct, in_acct, amount, factor=1):
     """perform transfer from one account to another. """
     out_acct.make_withdraw(amount)
     in_acct.make_deposit(amount*factor)
-    return out_acct, in_acct
+    log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name, in_acct.name, amount)
+    print(log)
 
+def UR2cash(ur):
+    return ur*1.6

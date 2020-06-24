@@ -14,6 +14,7 @@ def sum_balance(l):
     ret = 0
     for act in l:
         ret += act.balance
+    ret = round(ret, 2)
     print('Your current summation of balance is {}'.format(ret))
     return ret
 
