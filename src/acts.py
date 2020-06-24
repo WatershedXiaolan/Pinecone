@@ -279,6 +279,8 @@ class CreditCard:
         self._annual_fee = 0
         self._benefit = ''
         self._ftf = True
+        self._membership = []
+        self._reimburse = {}
     
     @property
     def restriction(self):
@@ -333,6 +335,32 @@ class CreditCard:
         else:
             return self._category[c]
     
+    def add_reimburse(self, name, balance=0, expire=date(2999,1,1)):
+        self._reimburse[name] = (balance, expire)
+
+    def get_reimburse(self):
+        return self._reimburse
+    
+    def withdraw_from_reimburse(self, name, v):
+        assert name in self._reimburse, "This category is not available"
+        balance, expire = self._reimburse[name]
+        assert balance >= v, "Not enough balance"
+        assert expire >= date.today(), "benefit expired"
+        self._reimburse = (balance-v, expire)
+
+    def delete_reimburse(self, name):
+        assert name in self._reimburse, "item not available"
+        self._reimburse.pop(name)
+
+
+    def add_membership(self, m):
+        """add available membership"""
+        self._membership.append(m)
+    
+    def get_membership(self, c=None):
+        """return available membership"""
+        return self._membership
+   
     def remove_expired_cat(self):
         for key, value in self._category.items():
             if value[2] < date.today(): # expired
@@ -373,3 +401,9 @@ def transfer(out_acct, in_acct, amount, factor=1):
 
 def UR2cash(ur):
     return ur*1.6
+
+def MR2cash(mr):
+    return mr*1.6
+
+def HHP2cash(hhp):
+    return hhp*0.4
