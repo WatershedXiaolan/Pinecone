@@ -50,6 +50,7 @@ class Account:
         print('Making Deposit...')
         #time.sleep(0.5)
         self._balance += value
+        self._balance = round(self._balance, 2)
         print('You made a deposit of {0}. Current balance is {1}'.format(value, self._balance))
 
     def make_withdraw(self, value):
@@ -59,6 +60,7 @@ class Account:
         print('Making Withdraw...')
         #time.sleep(0.5)
         self._balance -= value
+        self._balance = round(self._balance, 2)
         print('You made a withdraw of {0}. Current balance is {1}'.format(value, self._balance))    
 
 class BankAccount(Account):
@@ -319,8 +321,8 @@ class CreditCard:
         """get foreign transaction fee (boolen)"""
         return self._ftf
     
-    @benefit.setter
-    def benefit(self, b):
+    @ftf.setter
+    def ftf(self, b):
         """set foreign transaction fee (boolen)"""
         self._ftf = b
 
@@ -407,3 +409,8 @@ def MR2cash(mr):
 
 def HHP2cash(hhp):
     return hhp*0.4
+
+def TYP2cash(typ):
+    return typ*1.6
+
+# fix float types round to 2

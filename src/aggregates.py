@@ -8,6 +8,7 @@ import pickle
 import pandas as pd
 import os.path
 from os import path
+import pandas as pd
 
 def sum_balance(l):
     """get the current summation of balance given a list of accounts"""
@@ -31,7 +32,7 @@ def output_balance(l, d=date.today()):
     """get the current balance as a DataFrame, given a list of accounts"""
     a = {}
     for act in l:
-        a[act.name] = act.balance
+        a[act.name] = round(act.balance,2)
     b  = pd.DataFrame(a.items()).T
     b.columns = b.iloc[0]
     b.drop(b.index[0], inplace=True)
@@ -52,5 +53,34 @@ def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', 
         b.to_csv(f)
         return b
 
+def get_available_categories(l_cards):
+    all_df = []
+    for card in l_cards:
+        df = pd.DataFrame(card.get_cat()).T
+        df['card_name'] = card.name
+        all_df.append(df)
+    all_df = pd.concat(all_df, axis=0).reset_index().reset_index().drop(columns=['level_0'])
+    all_df.columns = ['category', 'pct', 'cb_type', 'start_date', 'expire_date', 'card_name']
+    all_df = all_df[(all_df.start_date >= date.today()) & (all_df.expire_date <= date.today())]
+    all_df.sort_values(by=['category', 'pct'], ascending=[True, False], inplace=True)
+    return all_df
 
+
+def get_all_alerts(l_card):
+    pass
+
+def get_latest_alerts(l_card):
+    pass
+
+#TODO: get the highest in each categories
+
+#TODO: get cards belong to a category, not expired, cash and type
+
+#TODO: get all alerts, ordered
+
+#TODO: get the most recent alert 
+
+#TODO: broker class
+
+#TODO: cash and stock position and profiles
 
