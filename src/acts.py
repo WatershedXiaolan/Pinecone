@@ -63,9 +63,9 @@ class Account:
         self._balance = round(self._balance, 2)
         print('You made a withdraw of {0}. Current balance is {1}'.format(value, self._balance))    
 
-class BankAccount(Account):
+class MoneyAccount(Account):
     """
-    This is the bank account object. It allows set balance, check balance, withdraw, and 
+    This is the money account abstract object. It allows set balance, check balance, withdraw, and 
     make deposit. It should also allows a future forcast, which takes interest and months 
     for forcast, and return the estimated value forward. 
     """
@@ -233,6 +233,56 @@ class BankAccount(Account):
         day = min(sourcedate.day, calendar.monthrange(year,month)[1])
         return date(year, month, day)
 
+class BankAccount(MoneyAccount):
+    def __init__(self, name, balance, interest_rate=0, month_fee=0, min_amount=0):
+        MoneyAccount.__init__(self, name, balance, interest_rate=interest_rate, min_amount=min_amount)
+        self._month_fee = month_fee
+        self._alert = {}
+
+    @property
+    def monthly_fee(self):
+        """get monthly fee"""
+        print('Getting monthly fee...')
+        #time.sleep(0.5)
+        return self._month_fee
+    
+    @monthly_fee.setter
+    def monthly_fee(self, fee):
+        """set monthly fee"""
+        print('Setting monthly fee...')
+        #time.sleep(0.5)
+        self._month_fee = fee
+        print('monthly fee is {}'.format(fee))    
+
+class RoboAccount(MoneyAccount):
+    def __init__(self, name, balance, interest_rate=0, annual_pct_fee=0.0, min_amount=0):
+        MoneyAccount.__init__(self, name, balance, interest_rate=interest_rate, min_amount=min_amount)
+        self._annual_pct_fee = annual_pct_fee
+        self._alert = {}
+    
+    @property
+    def annual_pct_fee(self):
+        """get annual percentage fee"""
+        print('Getting annual percentage fee...')
+        #time.sleep(0.5)
+        return self._annual_pct_fee
+    
+    @annual_pct_fee.setter
+    def annual_pct_fee(self, fee):
+        """set annual percentage fee"""
+        print('Setting annual percentage fee...')
+        #time.sleep(0.5)
+        self._annual_pct_fee = fee
+        print('annual percentage fee is {}%'.format(fee*100))  
+
+
+class BrokerAccount(MoneyAccount):
+    def __init__(self, name, balance, interest_rate=0, min_amount=0):
+        MoneyAccount.__init__(self, name, balance, interest_rate=interest_rate, min_amount=min_amount)
+        self._alert = {}
+    
+
+
 class GiftCard(Account):
     def __init__(self, name, balance, cat=None):
         Account.__init__(self, name, balance)
@@ -390,10 +440,6 @@ class CreditCard:
 
 
 
-
-
-    
-
 def transfer(out_acct, in_acct, amount, factor=1):
     """perform transfer from one account to another. """
     out_acct.make_withdraw(amount)
@@ -413,4 +459,12 @@ def HHP2cash(hhp):
 def TYP2cash(typ):
     return typ*1.6
 
-# fix float types round to 2
+# TODO: add program balances 
+"""
+A 401(k) or another employer-sponsored plan.
+An individual retirement account.
+A self-directed, taxable brokerage account.
+An account with a robo-advisor.
+Cash held in savings accounts, money market accounts or invested in certificates of deposit.
+Peer-to-peer lending accounts.
+"""

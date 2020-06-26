@@ -84,3 +84,9 @@ def get_latest_alerts(l_card):
 
 #TODO: cash and stock position and profiles
 
+#TODO: get all expiration date for gift card 
+
+#TODO：get porfolio report (add pie chart)
+
+
+
