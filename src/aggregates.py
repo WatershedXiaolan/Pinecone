@@ -67,18 +67,29 @@ def get_available_categories(l_cards):
 
 
 def get_all_alerts(l_card):
-    pass
+    alerts = []
+    for card in l_card:
+        alert = card.get_alert()
+        if alert!={}:
+            for key, value in alert.items():
+                alerts.append((card.name, key, value))
+    
+    df = pd.DataFrame(alerts, columns=['Name', 'Date', 'Alert']).sort_values(by='Date')
+    return df
+
 
 def get_latest_alerts(l_card):
-    pass
+    df = get_all_alerts(l_card)
+    if df.shape[0]==0:
+        print('No alert available')
+    else:
+        return df.iloc[0]
+
 
 #TODO: get the highest in each categories
 
 #TODO: get cards belong to a category, not expired, cash and type
 
-#TODO: get all alerts, ordered
-
-#TODO: get the most recent alert 
 
 #TODO: broker class
 

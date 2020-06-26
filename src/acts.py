@@ -1,5 +1,6 @@
 
 from datetime import date
+from datetime import timedelta
 import calendar
 import numpy as np
 import scipy.stats
@@ -259,28 +260,119 @@ class RoboAccount(MoneyAccount):
         MoneyAccount.__init__(self, name, balance, interest_rate=interest_rate, min_amount=min_amount)
         self._annual_pct_fee = annual_pct_fee
         self._alert = {}
+        self._stock_ratio = 0.5
     
     @property
     def annual_pct_fee(self):
         """get annual percentage fee"""
-        print('Getting annual percentage fee...')
-        #time.sleep(0.5)
         return self._annual_pct_fee
     
     @annual_pct_fee.setter
     def annual_pct_fee(self, fee):
         """set annual percentage fee"""
-        print('Setting annual percentage fee...')
-        #time.sleep(0.5)
         self._annual_pct_fee = fee
-        print('annual percentage fee is {}%'.format(fee*100))  
+    
+    @property
+    def stock_ratio(self):
+        """get stock ratio"""
+        return self._stock_ratio
+    
+    @stock_ratio.setter
+    def stock_ratio(self, r):
+        """set stock ratio"""
+        self._stock_ratio = r
+
 
 
 class BrokerAccount(MoneyAccount):
-    def __init__(self, name, balance, interest_rate=0, min_amount=0):
+    def __init__(self, name, balance, interest_rate=0, min_amount=0, d = date.today()):
         MoneyAccount.__init__(self, name, balance, interest_rate=interest_rate, min_amount=min_amount)
         self._alert = {}
+        self._stocks = {}
+        self._etfs = {}
+        self._bonds = {}
+        self._d = d
     
+    @property
+    def d(self):
+        return self._d
+    
+    @d.setter
+    def d(self, d):
+        self._d = d
+
+    def add_stocks(self, ID, full_name, number):
+        self._stocks[ID] = {full_name, number}
+    
+    def get_stocks(self):
+        return self._stocks
+
+    def add_ETF(self, ID, full_name, number, expense_ratio):
+        self._etfs[ID] = (full_name, number, expense_ratio)
+    
+    def get_ETF(self):
+        return self._etfs
+
+    def add_bonds(self, ID, full_name, number, expense_ratio):
+        self._bonds[ID] = (full_name, number, expense_ratio)
+    
+    def get_bonds(self):
+        return self._bonds
+
+    def get_position(self, ID):
+        """return total amount of a stock/etf/bond and its pct position in porfolio"""
+        assert ID in self._stocks or ID in self._etfs or ID in self._bonds
+        merged = self._stocks.update(self._bonds).update(self._etfs)
+        number = merged[ID][1]
+        price = self.get_price(ID, self._d)
+        amount = price * number
+        return amount, round(amount/self._balance, 2)
+    
+    def get_stock_positions(self):
+        IDs = self._stocks.keys()
+        prices = [self.get_price(id, self._d) for id in IDs]
+        numbers = [self._stocks[id][1] for id in IDs]
+        amount= sum([i*j for i, j in zip(prices, numbers)])
+        return amount
+
+    def get_etf_positions(self):
+        IDs = self._etfs.keys()
+        prices = [self.get_price(id, self._d) for id in IDs]
+        numbers = [self._etfs[id][1] for id in IDs]
+        amount= sum([i*j for i, j in zip(prices, numbers)])
+        return amount
+    
+    def get_bond_positions(self):
+        IDs = self._bonds.keys()
+        prices = [self.get_price(id, self._d) for id in IDs]
+        numbers = [self._bonds[id][1] for id in IDs]
+        amount= sum([i*j for i, j in zip(prices, numbers)])
+        return amount
+
+    def get_relative_position(self, amount):
+        return round(amount/self._balance, 2) 
+
+    def get_total_asset(self):
+        stocks = self.get_stock_positions()
+        bonds = self.get_etf_positions()
+        etfs = self.get_bond_positions()
+        return stocks+bonds+etfs
+
+    @staticmethod
+    def get_price(ID, d):
+        #from yahoo_fin import stock_info as si
+        import yfinance as yf
+        # get live price of Apple
+        #return si.get_live_price(ID)
+        tickerData = yf.Ticker(ID)
+        tickerDf = tickerData.history(period='1d', start=d, end = d+timedelta(days=1))
+        return tickerDf.Close.iloc[0]
+
+
+        
+
+    
+
 
 
 class GiftCard(Account):
