@@ -100,19 +100,24 @@ def get_latest_alerts(l_cards):
     else:
         return df.iloc[0]
 
-def get_all_account(l):
+def get_all_account(l_cards):
     temp = []
-    for c in l:
+    for c in l_cards:
         temp.append((c.name, c.balance))
     return pd.DataFrame(temp, columns=['Name', 'Position']).sort_values(by='Position',ascending=False)
 
-def get_all_restrictions(l):
+def get_all_restrictions(l_cards):
     temp = []
-    for c in l:
+    for c in l_cards:
         temp.append((c.name, c.restriction))
     return pd.DataFrame(temp, columns=['Name', 'Restriction']).sort_values(by='Name',ascending=False)
 
-
+def get_all_annual_fee(l_cards):
+    temp = []
+    for c in l_cards:
+        if c.annual_fee != 0:
+            temp.append((c.name, c.annual_fee))
+    return pd.DataFrame(temp, columns=['Name', 'Annual Fee']).sort_values(by='Annual Fee',ascending=False)   
 # get all account and positions
 
 #TODO: cash and stock position and profiles
