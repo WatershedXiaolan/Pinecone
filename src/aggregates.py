@@ -53,7 +53,7 @@ def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', 
         b.to_csv(f)
         return b
 
-def get_available_categories(l_cards):
+def get_all_cb(l_cards):
     all_df = []
     for card in l_cards:
         df = pd.DataFrame(card.get_cat()).T
@@ -61,14 +61,29 @@ def get_available_categories(l_cards):
         all_df.append(df)
     all_df = pd.concat(all_df, axis=0).reset_index().reset_index().drop(columns=['level_0'])
     all_df.columns = ['category', 'pct', 'cb_type', 'start_date', 'expire_date', 'card_name']
-    all_df = all_df[(all_df.start_date >= date.today()) & (all_df.expire_date <= date.today())]
-    all_df.sort_values(by=['category', 'pct'], ascending=[True, False], inplace=True)
+    all_df = all_df[(all_df.start_date <= date.today()) & (all_df.expire_date >= date.today())]
+    all_df['pct_cash'] = all_df[['pct', 'cb_type']].apply(lambda x: convert2cash(x[1], x[0]), axis=1)
+    all_df.sort_values(by=['category', 'pct_cash'], ascending=[True, False], inplace=True)
+    all_df = all_df[['category', 'card_name', 'pct_cash', 'pct', 'cb_type', 'start_date', 'expire_date']] # reorder
     return all_df
 
+def get_highest_cb_each_cat(l_card):
+    all_df =  get_all_cb(l_card)
+    idx = all_df.groupby('category')['pct_cash'].idxmax()
+    return all_df.loc[idx]
 
-def get_all_alerts(l_card):
+def convert2cash(t, v):
+    available_type = {'UR':  1.5, \
+                      'MR':  1.5, \
+                      'HHP': 0.4, \
+                      'TYP': 1.5, \
+                      'cash':1.0}
+    assert t in available_type, 'This type is not supported'
+    return v*available_type[t]
+
+def get_all_alerts(l_cards):
     alerts = []
-    for card in l_card:
+    for card in l_cards:
         alert = card.get_alert()
         if alert!={}:
             for key, value in alert.items():
@@ -78,20 +93,27 @@ def get_all_alerts(l_card):
     return df
 
 
-def get_latest_alerts(l_card):
-    df = get_all_alerts(l_card)
+def get_latest_alerts(l_cards):
+    df = get_all_alerts(l_cards)
     if df.shape[0]==0:
         print('No alert available')
     else:
         return df.iloc[0]
 
+def get_all_account(l):
+    temp = []
+    for c in l:
+        temp.append((c.name, c.balance))
+    return pd.DataFrame(temp, columns=['Name', 'Position']).sort_values(by='Position',ascending=False)
 
-#TODO: get the highest in each categories
+def get_all_restrictions(l):
+    temp = []
+    for c in l:
+        temp.append((c.name, c.restriction))
+    return pd.DataFrame(temp, columns=['Name', 'Restriction']).sort_values(by='Name',ascending=False)
 
-#TODO: get cards belong to a category, not expired, cash and type
 
-
-#TODO: broker class
+# get all account and positions
 
 #TODO: cash and stock position and profiles
 
@@ -99,5 +121,5 @@ def get_latest_alerts(l_card):
 
 #TODO：get porfolio report (add pie chart)
 
-
+#TODO: read me file or sphinx documentation
 

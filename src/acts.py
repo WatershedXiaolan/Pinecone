@@ -291,7 +291,9 @@ class BrokerAccount(MoneyAccount):
         self._stocks = {}
         self._etfs = {}
         self._bonds = {}
+        self._mmf = {}
         self._d = d
+        self._cash = 0
     
     @property
     def d(self):
@@ -300,6 +302,14 @@ class BrokerAccount(MoneyAccount):
     @d.setter
     def d(self, d):
         self._d = d
+
+    @property
+    def cash(self):
+        return self._cash
+    
+    @cash.setter
+    def cash(self, cash):
+        self._cash = cash
 
     def add_stocks(self, ID, full_name, number):
         self._stocks[ID] = {full_name, number}
@@ -312,6 +322,12 @@ class BrokerAccount(MoneyAccount):
     
     def get_ETF(self):
         return self._etfs
+
+    def add_MMF(self, ID, full_name, number, expense_ratio):
+        self._mmf[ID] = (full_name, number, expense_ratio)
+    
+    def get_MMF(self):
+        return self._mmf
 
     def add_bonds(self, ID, full_name, number, expense_ratio):
         self._bonds[ID] = (full_name, number, expense_ratio)
@@ -470,7 +486,7 @@ class CreditCard:
 
     def add_cat(self, cat, pct=0, type_='cash', expire=date(2999,1,1), start=date(1000,1,1)):
         """add cash back category"""
-        self._category[cat] = (pct, type_, expire, start)
+        self._category[cat] = (pct, type_, start, expire)
     
     def get_cat(self, c=None):
         """return cash back categories"""
@@ -516,7 +532,7 @@ class CreditCard:
         for key, value in awargs:
             self._alert[key] = value
 
-    def get_all_alert(self):
+    def get_alert(self):
         return self._alert
     
     def print_alert(self, latest=False):
@@ -539,17 +555,8 @@ def transfer(out_acct, in_acct, amount, factor=1):
     log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name, in_acct.name, amount)
     print(log)
 
-def UR2cash(ur):
-    return ur*1.6
 
-def MR2cash(mr):
-    return mr*1.6
-
-def HHP2cash(hhp):
-    return hhp*0.4
-
-def TYP2cash(typ):
-    return typ*1.6
+    
 
 # TODO: add program balances 
 """
