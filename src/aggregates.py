@@ -109,7 +109,8 @@ def get_all_account(l_cards):
 def get_all_restrictions(l_cards):
     temp = []
     for c in l_cards:
-        temp.append((c.name, c.restriction))
+        if c.restriction:
+            temp.append((c.name, c.restriction))
     return pd.DataFrame(temp, columns=['Name', 'Restriction']).sort_values(by='Name',ascending=False)
 
 def get_all_annual_fee(l_cards):
@@ -118,6 +119,29 @@ def get_all_annual_fee(l_cards):
         if c.annual_fee != 0:
             temp.append((c.name, c.annual_fee))
     return pd.DataFrame(temp, columns=['Name', 'Annual Fee']).sort_values(by='Annual Fee',ascending=False)   
+
+def No_ftf(l_cards):
+    temp = []
+    for c in l_cards:
+        if not c._ftf:
+            temp.append(c.name)
+    return temp
+
+def get_all_membership(l_cards):
+    temp = []
+    for c in l_cards:
+        temp2 = c.get_reimburse()
+        for k in temp2:
+            temp.append((c.name, k, temp2[k][0], temp2[k][1]))
+    return pd.DataFrame(temp, columns=['Name', 'Type', 'Balance', 'Expire']).sort_values(by='Expire')  
+
+def get_all_other_benefits(l_cards):
+    temp = []
+    for c in l_cards:
+        if c.benefit != '':
+            temp.append((c.name, c.benefit))
+    return pd.DataFrame(temp, columns=['Name', 'Benefit']).sort_values(by='Name',ascending=False)
+
 # get all account and positions
 
 #TODO: cash and stock position and profiles

@@ -312,10 +312,20 @@ class BrokerAccount(MoneyAccount):
         self._cash = cash
 
     def add_stocks(self, ID, full_name, number):
-        self._stocks[ID] = {full_name, number}
+        self._stocks[ID] = (full_name, number)
     
     def get_stocks(self):
         return self._stocks
+
+    def buy_stocks(self, ID, number):
+        assert ID in self._stocks, 'please use add_stocks instead'
+        self._stocks[ID] = (self._stocks[ID][0], self._stocks[ID][1]+number)
+
+    def sell_stocks(self, ID, number):
+        assert ID in self._stocks, 'please purchase stock first'
+        current = self._stocks[ID][1]
+        assert current>=number, 'not enough stocks to sell'
+        self._stocks[ID] = (self._stocks[ID][0], self._stocks[ID][1]-number)
 
     def add_ETF(self, ID, full_name, number, expense_ratio):
         self._etfs[ID] = (full_name, number, expense_ratio)
@@ -323,17 +333,47 @@ class BrokerAccount(MoneyAccount):
     def get_ETF(self):
         return self._etfs
 
+    def buy_ETF(self, ID, number):
+        assert ID in self._etfs, 'please use add_stocks instead'
+        self._etfs[ID] = (self._etfs[ID][0], self._etfs[ID][1]+number, self._etfs[ID][2])
+
+    def sell_ETF(self, ID, number):
+        assert ID in self._etfs, 'please purchase stock first'
+        current = self._etfs[ID][1]
+        assert current>=number, 'not enough stocks to sell'
+        self._etfs[ID] = (self._etfs[ID][0], self._etfs[ID][1]-number, self._etfs[ID][2])
+
     def add_MMF(self, ID, full_name, number, expense_ratio):
         self._mmf[ID] = (full_name, number, expense_ratio)
     
     def get_MMF(self):
         return self._mmf
 
+    def buy_MMF(self, ID, number):
+        assert ID in self._mmf, 'please use add_stocks instead'
+        self._mmf[ID] = (self._mmf[ID][0], self._mmf[ID][1]+number, self._mmf[ID][2])
+
+    def sell_MMF(self, ID, number):
+        assert ID in self._mmf, 'please purchase stock first'
+        current = self._mmf[ID][1]
+        assert current>=number, 'not enough stocks to sell'
+        self._mmf[ID] = (self._mmf[ID][0], self._mmf[ID][1]-number, self._mmf[ID][2])
+ 
     def add_bonds(self, ID, full_name, number, expense_ratio):
         self._bonds[ID] = (full_name, number, expense_ratio)
     
     def get_bonds(self):
         return self._bonds
+
+    def buy_bonds(self, ID, number):
+        assert ID in self._bonds, 'please use add_stocks instead'
+        self._bonds[ID] = (self._bonds[ID][0], self._bonds[ID][1]+number, self._bonds[ID][2])
+
+    def sell_bonds(self, ID, number):
+        assert ID in self._bonds, 'please purchase stock first'
+        current = self._bonds[ID][1]
+        assert current>=number, 'not enough stocks to sell'
+        self._bonds[ID] = (self._bonds[ID][0], self._bonds[ID][1]-number, self._bonds[ID][2])
 
     def get_position(self, ID):
         """return total amount of a stock/etf/bond and its pct position in porfolio"""
@@ -445,13 +485,13 @@ class CreditCard:
     @property
     def restriction(self):
         """get restriction"""
-        print('Getting restrictions...')
+        #print('Getting restrictions...')
         return self._restriction
     
     @restriction.setter
     def restriction(self, words):
         """set restriction"""
-        print('Setting restrictions...')
+        #print('Setting restrictions...')
         self._restriction = words
     
     @property
