@@ -20,13 +20,13 @@ class Account:
     @property
     def restriction(self):
         """get restriction"""
-        print('Getting restrictions...')
+        #print('Getting restrictions...')
         return self._restriction
     
     @restriction.setter
     def restriction(self, words):
         """set restriction"""
-        print('Setting restrictions...')
+        #print('Setting restrictions...')
         self._restriction = words
         #print('restrictions: {}'.format(words))
     
@@ -48,21 +48,21 @@ class Account:
     def make_deposit(self, value):
         """make a deposite from account"""
         assert value>0, 'Please make a positive deposit'
-        print('Making Deposit...')
+        #print('Making Deposit...')
         #time.sleep(0.5)
         self._balance += value
         self._balance = round(self._balance, 2)
-        print('You made a deposit of {0}. Current balance is {1}'.format(value, self._balance))
+        #print('You made a deposit of {0}. Current balance is {1}'.format(value, self._balance))
 
     def make_withdraw(self, value):
         """make a withdraw from account"""
         assert value>0, 'Please make a positive withdraw'
         assert self._balance >= value, "You don't have enough to make a valid withdraw"
-        print('Making Withdraw...')
+        #print('Making Withdraw...')
         #time.sleep(0.5)
         self._balance -= value
         self._balance = round(self._balance, 2)
-        print('You made a withdraw of {0}. Current balance is {1}'.format(value, self._balance))    
+        #print('You made a withdraw of {0}. Current balance is {1}'.format(value, self._balance))    
 
 class MoneyAccount(Account):
     """
@@ -81,32 +81,32 @@ class MoneyAccount(Account):
     @property
     def monthly_fee(self):
         """get monthly fee"""
-        print('Getting monthly fee...')
+        #print('Getting monthly fee...')
         #time.sleep(0.5)
         return self._month_fee
     
     @monthly_fee.setter
     def monthly_fee(self, fee):
         """set monthly fee"""
-        print('Setting monthly fee...')
+        #print('Setting monthly fee...')
         #time.sleep(0.5)
         self._month_fee = fee
-        print('monthly fee is {}'.format(fee))    
+        #print('monthly fee is {}'.format(fee))    
 
     @property
     def min_amount(self):
         """get minimum amount"""
-        print('Getting minimum amount...')
+        #print('Getting minimum amount...')
         #time.sleep(0.5)
         return self._min_amount
     
     @min_amount.setter
     def min_amount(self, m):
         """set minimum amount"""
-        print('Setting minimum amount...')
+        #print('Setting minimum amount...')
         #time.sleep(0.5)
         self._min_amount = m
-        print('minimum amount is {}'.format(m))    
+        #print('minimum amount is {}'.format(m))    
 
 
     def add_alert(self, alert):
@@ -114,7 +114,7 @@ class MoneyAccount(Account):
         assert isinstance(alert[0], date), 'please provide a date'
         self._alert[alert[0]] = alert[1]
 
-    def get_alert(self, verbose=True):
+    def get_alert(self, verbose=False):
         if verbose:
             for item in self._alert.items():
                 print('{}: {}'.format(item[0], item[1]))
@@ -130,37 +130,37 @@ class MoneyAccount(Account):
     @property
     def annual_pct_fee(self):
         """get annual percentage fee"""
-        print('Getting annual percentage fee...')
+        #print('Getting annual percentage fee...')
         #time.sleep(0.5)
         return self._annual_pct_fee
     
     @annual_pct_fee.setter
     def annual_pct_fee(self, fee):
         """set annual percentage fee"""
-        print('Setting annual percentage fee...')
+        #print('Setting annual percentage fee...')
         #time.sleep(0.5)
         self._annual_pct_fee = fee
-        print('annual percentage fee is {}%'.format(fee*100))    
+        #print('annual percentage fee is {}%'.format(fee*100))    
 
     @property
     def interest_rate(self):
         """get interest rate"""
-        print('Getting interest rate...')
+        #print('Getting interest rate...')
         #time.sleep(0.5)
         return self._interest_rate
     
     @interest_rate.setter
     def interest_rate(self, interest_rate):
         """set interest rate"""
-        print('Setting interest rate...')
+        #print('Setting interest rate...')
         #time.sleep(0.5)
         self._interest_rate = interest_rate
-        print('interest rate. is {}%'.format(interest_rate*100))   
+        #print('interest rate. is {}%'.format(interest_rate*100))   
     
     def allocable_mount(self):
         """get allocatable amount without violating minimum balance"""
         ret = round(self._balance - self._min_amount, 2)
-        print('Allocable amount is {}'.format(ret))
+        #print('Allocable amount is {}'.format(ret))
         return ret
 
     def forcast(self, interest_rate=None, months=0, verbose=True, d=date.today()):
@@ -243,17 +243,17 @@ class BankAccount(MoneyAccount):
     @property
     def monthly_fee(self):
         """get monthly fee"""
-        print('Getting monthly fee...')
+        #print('Getting monthly fee...')
         #time.sleep(0.5)
         return self._month_fee
     
     @monthly_fee.setter
     def monthly_fee(self, fee):
         """set monthly fee"""
-        print('Setting monthly fee...')
+        #print('Setting monthly fee...')
         #time.sleep(0.5)
         self._month_fee = fee
-        print('monthly fee is {}'.format(fee))    
+        #print('monthly fee is {}'.format(fee))    
 
 class RoboAccount(MoneyAccount):
     def __init__(self, name, balance, interest_rate=0, annual_pct_fee=0.0, min_amount=0):
@@ -425,11 +425,6 @@ class BrokerAccount(MoneyAccount):
         return tickerDf.Close.iloc[0]
 
 
-        
-
-    
-
-
 
 class GiftCard(Account):
     def __init__(self, name, balance, cat=None):
@@ -441,20 +436,20 @@ class GiftCard(Account):
     @property
     def expiration(self):
         """get expiration date"""
-        print('Getting expiration date...')
+        #print('Getting expiration date...')
         #time.sleep(0.5)
-        print('Expiration date is {}.{}.{}'.format(self._expiration.year, \
-            self._expiration.month, self._expiration.day))
+        #print('Expiration date is {}.{}.{}'.format(self._expiration.year, \
+        #    self._expiration.month, self._expiration.day))
         return self._expiration
     
     @expiration.setter
     def expiration(self, d):
         """set expiration date"""
         assert isinstance(d, date), 'Please provide a valid date format: date(year, month, day)'
-        print('Setting expiration...')
+        #print('Setting expiration...')
         #time.sleep(0.5)
         self._expiration = d
-        print('Expiration date set to {}.{}.{}'.format(d.year, d.month, d.day))
+        #print('Expiration date set to {}.{}.{}'.format(d.year, d.month, d.day))
     
     @property
     def code(self):
@@ -593,7 +588,7 @@ def transfer(out_acct, in_acct, amount, factor=1):
     out_acct.make_withdraw(amount)
     in_acct.make_deposit(amount*factor)
     log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name, in_acct.name, amount)
-    print(log)
+    #print(log)
 
 
     

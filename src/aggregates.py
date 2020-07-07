@@ -54,6 +54,7 @@ def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', 
         return b
 
 def get_all_cb(l_cards):
+    """credit card specific method"""
     all_df = []
     for card in l_cards:
         df = pd.DataFrame(card.get_cat()).T
@@ -67,12 +68,14 @@ def get_all_cb(l_cards):
     all_df = all_df[['category', 'card_name', 'pct_cash', 'pct', 'cb_type', 'start_date', 'expire_date']] # reorder
     return all_df
 
-def get_highest_cb_each_cat(l_card):
-    all_df =  get_all_cb(l_card)
+def get_highest_cb_each_cat(l_cards):
+    """credit card specific method"""
+    all_df =  get_all_cb(l_cards)
     idx = all_df.groupby('category')['pct_cash'].idxmax()
     return all_df.loc[idx]
 
 def convert2cash(t, v):
+    """credit card specific method"""
     available_type = {'UR':  1.5, \
                       'MR':  1.5, \
                       'HHP': 0.4, \
@@ -81,9 +84,9 @@ def convert2cash(t, v):
     assert t in available_type, 'This type is not supported'
     return v*available_type[t]
 
-def get_all_alerts(l_cards):
+def get_all_alerts(l):
     alerts = []
-    for card in l_cards:
+    for card in l:
         alert = card.get_alert()
         if alert!={}:
             for key, value in alert.items():
@@ -92,28 +95,28 @@ def get_all_alerts(l_cards):
     df = pd.DataFrame(alerts, columns=['Name', 'Date', 'Alert']).sort_values(by='Date')
     return df
 
-
-def get_latest_alerts(l_cards):
-    df = get_all_alerts(l_cards)
+def get_latest_alerts(l):
+    df = get_all_alerts(l)
     if df.shape[0]==0:
         print('No alert available')
     else:
         return df.iloc[0]
 
-def get_all_account(l_cards):
+def get_all_account(l):
     temp = []
-    for c in l_cards:
+    for c in l:
         temp.append((c.name, c.balance))
     return pd.DataFrame(temp, columns=['Name', 'Position']).sort_values(by='Position',ascending=False)
 
-def get_all_restrictions(l_cards):
+def get_all_restrictions(l):
     temp = []
-    for c in l_cards:
+    for c in l:
         if c.restriction:
             temp.append((c.name, c.restriction))
     return pd.DataFrame(temp, columns=['Name', 'Restriction']).sort_values(by='Name',ascending=False)
 
 def get_all_annual_fee(l_cards):
+    """credit card specific method"""
     temp = []
     for c in l_cards:
         if c.annual_fee != 0:
@@ -121,6 +124,7 @@ def get_all_annual_fee(l_cards):
     return pd.DataFrame(temp, columns=['Name', 'Annual Fee']).sort_values(by='Annual Fee',ascending=False)   
 
 def No_ftf(l_cards):
+    """credit card specific method"""
     temp = []
     for c in l_cards:
         if not c._ftf:
@@ -128,6 +132,7 @@ def No_ftf(l_cards):
     return temp
 
 def get_all_membership(l_cards):
+    """credit card specific method"""
     temp = []
     for c in l_cards:
         temp2 = c.get_reimburse()
@@ -136,13 +141,28 @@ def get_all_membership(l_cards):
     return pd.DataFrame(temp, columns=['Name', 'Type', 'Balance', 'Expire']).sort_values(by='Expire')  
 
 def get_all_other_benefits(l_cards):
+    """credit card specific method"""
     temp = []
     for c in l_cards:
         if c.benefit != '':
             temp.append((c.name, c.benefit))
     return pd.DataFrame(temp, columns=['Name', 'Benefit']).sort_values(by='Name',ascending=False)
 
+def get_gc_balance_by_cat(l_gc):
+    """gift card specific method"""
+    ret = {}
+    for c in l_gc:
+        if c.cat not in ret:
+            ret[c.cat] = c.balance
+        else:
+            ret[c.cat] += c.balance
+    ret = pd.DataFrame(ret).sort_values()
+
+
+
 # get all account and positions
+
+# get add expense ratio 
 
 #TODO: cash and stock position and profiles
 
