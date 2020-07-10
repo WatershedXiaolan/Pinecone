@@ -311,6 +311,13 @@ class BrokerAccount(MoneyAccount):
     def cash(self, cash):
         self._cash = cash
 
+    def get_all_names(self):
+        l_stocks = list(self.get_stocks().keys())
+        l_ETF = list(self.get_ETF().keys())
+        l_MMF = list(self.get_MMF().keys())
+        l_bonds = list(self.get_bonds().keys())
+        return l_stocks + l_ETF + l_MMF + l_bonds
+
     def add_stocks(self, ID, full_name, number):
         self._stocks[ID] = (full_name, number)
     
