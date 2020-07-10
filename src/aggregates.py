@@ -9,6 +9,8 @@ import pandas as pd
 import os.path
 from os import path
 import pandas as pd
+from os import listdir
+
 
 def sum_balance(l):
     """get the current summation of balance given a list of accounts"""
@@ -156,8 +158,8 @@ def get_gc_balance_by_cat(l_gc):
             ret[c.cat] = c.balance
         else:
             ret[c.cat] += c.balance
-    ret = pd.DataFrame(ret, columns=['balance']).sort_values('balance')
-
+    ret =  pd.DataFrame(ret.items(), columns=['cat', 'balance']).sort_values('balance', ascending=False).reset_index(drop=True)
+    return ret 
 
 def get_all_broker_buy_names(l_brokers):
     """get all stock names from all broker account"""
@@ -186,6 +188,42 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
     
     return tot_stock_amt, tot_etf_amt, tot_bond_amt, tot_mmf_amt, tot_cash_amt
 
+def save_pkl_files(l_banks=[], l_brokers=[], l_robos=[], l_gcs=[]):
+    for b in l_banks:
+        save_object(b, 'saved_objs/banks/'+b.name+'.pkl')
+    for b in l_brokers:
+        save_object(b, 'saved_objs/brokers/'+b.name+'.pkl')
+    for b in l_robos:
+        save_object(b, 'saved_objs/robos/'+b.name+'.pkl')
+    for b in l_gcs:
+        save_object(b, 'saved_objs/gcs/'+b.name+'.pkl')
+
+def load_pkl_files():
+    bank_files = [f for f in listdir('saved_objs/banks/') if path.isfile(path.join('saved_objs/banks/', f))]
+    brokers_files = [f for f in listdir('saved_objs/brokers/') if path.isfile(path.join('saved_objs/brokers/', f))]
+    gcs_files = [f for f in listdir('saved_objs/gcs/') if path.isfile(path.join('saved_objs/gcs/', f))]
+    robos_files = [f for f in listdir('saved_objs/robos/') if path.isfile(path.join('saved_objs/robos/', f))]
+    l_banks = []; l_gcs = []; l_brokers = []; l_robos = []
+
+    for f in bank_files:
+        l_banks.append(load_object(path.join('saved_objs/banks/', f)))
+    for f in brokers_files:
+        l_brokers.append(load_object(path.join('saved_objs/brokers/', f)))
+    for f in gcs_files:
+        l_gcs.append(load_object(path.join('saved_objs/gcs/', f)))    
+    for f in robos_files:
+        l_robos.append(load_object(path.join('saved_objs/robos/', f)))   
+    return l_banks, l_brokers, l_gcs, l_robos
+
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:  # Overwrites any existing file.
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+def load_object(filename):
+    with open(filename, 'rb') as input:
+        ret = pickle.load(input)
+    return ret
+    
 
     
 
