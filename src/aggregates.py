@@ -173,11 +173,19 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
     """gether all account, return cash, mmf, stock, etf and bond balances"""
     tot_stock_amt = 0; tot_etf_amt = 0; tot_bond_amt=0; tot_mmf_amt=0
     tot_cash_amt = 0
+    b_temp = 0
     for b in l_brokers:
+        b_temp += b.balance
         tot_stock_amt += sum([prices[k]*v[1] for k, v in b.get_stocks().items()])
         tot_etf_amt += sum([prices[k]*v[1] for k, v in b.get_ETF().items()])
         tot_bond_amt += sum([prices[k]*v[1] for k, v in b.get_bonds().items()])
         tot_mmf_amt += sum([prices[k]*v[1] for k, v in b.get_MMF().items()])
+
+    # find remaining cash in broker accounts
+    b_temp -= tot_stock_amt
+    b_temp -= tot_bond_amt
+    b_temp -= tot_etf_amt
+    b_temp -= tot_mmf_amt
 
     for b in l_robos:
         tot_etf_amt += b.balance*b.stock_ratio
@@ -186,6 +194,10 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
     for b in l_banks:
         tot_cash_amt += b.balance
     
+
+
+    tot_cash_amt += b_temp
+
     return tot_stock_amt, tot_etf_amt, tot_bond_amt, tot_mmf_amt, tot_cash_amt
 
 def save_pkl_files(l_banks=[], l_brokers=[], l_robos=[], l_gcs=[]):

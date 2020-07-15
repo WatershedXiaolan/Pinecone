@@ -588,7 +588,12 @@ class CreditCard:
                 for key, value in self._alert.items():
                     print('Alert: {}, {}'.format(key, value))
 
-
+def transfer(out_acct, in_acct, amount, factor=1):
+    """perform transfer from one account to another. """
+    out_acct.make_withdraw(amount)
+    in_acct.make_deposit(amount*factor)
+    log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name, in_acct.name, amount)
+    #print(log)
 
 
 
