@@ -189,7 +189,7 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
 
     for b in l_robos:
         tot_etf_amt += b.balance*b.stock_ratio
-        tot_bond_amt += b.balance*b.stock_ratio
+        tot_bond_amt += b.balance*(1-b.stock_ratio)
 
     for b in l_banks:
         tot_cash_amt += b.balance
