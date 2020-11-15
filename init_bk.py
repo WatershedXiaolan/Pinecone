@@ -6,6 +6,7 @@ from src.get_prices import *
 import pickle
 from datetime import date
 from src.plots import * 
+from src.get_prices import get_static_prices
 
 # delete log files
 import os, shutil
@@ -339,13 +340,14 @@ costco_1_2.make_withdraw(240)
 usbank_checking.make_withdraw(450) # tree trimming
 chase_checking.make_withdraw(242.07) # pay chase freedom
 transfer(chase_checking, chase_invest_trade, 20000)
+
 chase_checking.make_withdraw(397.26) # pay Amex Aspire
 
 balances = output_balance(l_banks+l_brokers+l_robos, d=d)
 _ = write_balance(balances)
 balances = output_balance(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
-print(5)
+
 
 #----------------------------------------------------------------- 
 d=date(2020,7,14)
@@ -657,6 +659,8 @@ usbank_checking.balance = 1791.38
 discover_saving.balance = 1122.16
 betterment_cash.balance = 24.66
 yotta.balance = 5035.34
+robinhood.balance = 86134.6
+chase_invest_trade.balance = 95864.27
 
 # interest
 capital_one.interest_rate = 0.004
@@ -671,6 +675,7 @@ robinhood.sell_stocks("AAPL", 5)
 robinhood.buy_stocks("BABA", 3)
 robinhood.buy_stocks("LUV", 10)
 robinhood.buy_stocks("DAL", 10)
+robinhood.buy_stocks("TSLA", 4)
 robinhood.sell_ETF("JETS", 30)
 
 # chase stock 
@@ -679,7 +684,7 @@ chase_invest_trade.buy_ETF("VEA", 1.98)
 chase_invest_trade.buy_ETF("VWO", 2.17)
 chase_invest_trade.buy_ETF("VTV", 0.35)
 chase_invest_trade.buy_ETF("VOE", 0.27)
-chase_invest_trade.buy_ETF("VOO", 20)
+chase_invest_trade.sell_ETF("VOO", 20)
 chase_invest_trade.buy_ETF("VBR", 0.19)
 
 chase_invest_trade.sell_bonds("BND", 8.91)
@@ -692,9 +697,30 @@ chase_invest_trade.buy_bonds("AGG", 0.07)
 betterment_wealth.balance = 32042.59
 wealthfront.balance = 18684.10
 
+# broker account, reset cash and balance
+prices = get_static_prices()
+robinhood.cash = 2993.83
+robinhood.balance = robinhood.get_balance(prices)
+chase_invest_trade.cash = 154.89
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+
 # pay card 
 chase_checking.make_withdraw(155.25) # pay usbank
 chase_checking.make_withdraw(19.88) # pay discover
+
+# transfer
+transfer(betterment_wealth, chase_checking, 20000, factor=1)
+transfer(chase_checking, chase_invest_trade, 20000, factor=1)
+
+# transfer to cqm
+chase_checking.make_withdraw(887.0)
+
+
+balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+_ = write_balance(balances)
+balances = output_balance(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
 
 
 # gc by categories 
@@ -717,3 +743,4 @@ chase_checking.make_withdraw(19.88) # pay discover
 # todo: see what's going on with ira
 # todo: see beveldere pop up correct or not 
 # todo: see if I received costco card
+print('Done')

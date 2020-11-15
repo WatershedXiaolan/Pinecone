@@ -294,7 +294,41 @@ class BrokerAccount(MoneyAccount):
         self._mmf = {}
         self._d = d
         self._cash = 0
+
+    def get_balance(self, prices):
+        """only for broker acct
+        calculate current balance from all positions"""
+        blc = 0
+        blc += sum([prices[k]*v[1] for k, v in self.get_stocks().items()])
+        blc += sum([prices[k]*v[1] for k, v in self.get_ETF().items()])
+        blc += sum([prices[k]*v[1] for k, v in self.get_bonds().items()])
+        blc += sum([prices[k]*v[1] for k, v in self.get_MMF().items()])
+        blc += self._cash    
+        return blc
+
+
     
+    def make_deposit(self, value):
+        """adapt from base class
+        add fund to the cash part"""
+        assert value>0, 'Please make a positive deposit'
+        self._balance += value
+        self._balance = round(self._balance, 2)
+        self._cash += value
+        self._cash = round(self._cash, 2)
+    
+    def make_withdraw(self, value):
+        """adapt from base class
+        withdraw fund from the cash part"""
+        assert value>0, 'Please make a positive withdraw'
+        assert self._cash >= value, "You don't have enough to make a valid withdraw"
+        assert self._balance >= value, "You don't have enough to make a valid withdraw"
+
+        self._balance -= value
+        self._balance = round(self._balance, 2)
+        self._cash -= value
+        self._cash = round(self._cash, 2)
+
     @property
     def d(self):
         return self._d
