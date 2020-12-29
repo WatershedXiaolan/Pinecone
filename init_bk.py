@@ -7,7 +7,7 @@ import pickle
 from datetime import date
 from src.plots import * 
 from src.get_prices import get_static_prices
-
+prices = get_static_prices()
 # delete log files
 import os, shutil
 folder = r'/Users/xiaolan/Documents/repos/FinProject/log/'
@@ -77,7 +77,8 @@ l_banks = [chase_checking, chase_saving, marcus_cd_4655, marcus_cd_7222, marcus_
 l_brokers = [chase_invest_trade, robinhood, fidelity]
 l_robos = [betterment_wealth, wealthfront]
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=date(2020,6,21))
+d=date(2020,6,21)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
 
 
@@ -123,7 +124,9 @@ l_gc = [nordstrom_digit, target_green_chrismas, target_green_chrismas2, target_r
           wholefood3pack, wholefood50, wholefood50_2, wholefood100, wholefood_awe, wholefood_scratch, \
           kroger, first_watch1, first_watch2, trader_joe, starbucks, airbnb1, airbnb2, gamestop, burger_king, \
           cheese_cake_factory]
-balances = output_balance(l_gc, d=date(2020,6,21))
+
+d = date(2020,6,21)
+balances = output_balance_gc(l_gc, d=date(2020,6,21))
 _ = write_balance(balances, filename='gc_balance.csv')
 
 
@@ -133,26 +136,29 @@ d=date(2020,6,22)
 usbank_checking.make_withdraw(77.16) # pay usbank credit card
 transfer(usbank_saving, usbank_checking, 500, factor=1)
 transfer(chase_saving, chase_checking, 1700, factor=1)
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=date(2020,6,21))
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
+
 #-----------------------------------------------------------------
 d=date(2020,6,23)
 chase_checking.make_withdraw(5.9) # pay CSP
 chase_checking.make_withdraw(131.68) # pay Amex Hilton
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #-----------------------------------------------------------------
 d=date(2020,6,24)
 heb = GiftCard(name='HEB 1', balance=0, cat='Heb')
 transfer(chase_checking, heb, 100, factor=1)
 l_gc.append(heb)
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #-----------------------------------------------------------------
@@ -178,9 +184,9 @@ robinhood.add_stocks(ID='MSFT', number=15, full_name='Microsoft')
 #print(robinhood.get_stock_positions())
 #print(robinhood.get_bond_positions())
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #-----------------------------------------------------------------
@@ -199,9 +205,9 @@ transfer(chase_checking, betterment_traditional, 6000, factor=1)
 # pay freedom card
 chase_checking.make_withdraw(15.98)
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #-----------------------------------------------------------------
 d=date(2020,6,28)
@@ -217,9 +223,9 @@ chase_invest_trade.add_MMF(ID='VMMXX', number=25165.33, full_name='', expense_ra
 betterment_wealth.stock_ratio = 0.8
 wealthfront.stock_ratio = 0.8
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #-----------------------------------------------------------------
 d=date(2020,6,29)
@@ -238,9 +244,9 @@ transfer(chase_checking, costco_3_2, 300, factor=1)
 costco_1_1.make_withdraw(250)
 l_gc += [costco_1_1, costco_1_2, costco_2_1, costco_3_1, costco_3_2]
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2020,6,30)
@@ -262,9 +268,9 @@ chase_checking.make_deposit(3158.73)
 # rent
 chase_checking.make_withdraw(1124.04)
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -297,7 +303,6 @@ robinhood.add_ETF('VOO', 'SP 500', 15, expense_ratio=0.0003)
 
 names = get_all_broker_buy_names([robinhood, fidelity, chase_invest_trade])
 # get static prices 
-prices = get_static_prices()
 temp = [n for n in names if n not in prices.keys()]
 if temp!=[]:
     print(temp)
@@ -309,9 +314,9 @@ if temp!=[]:
 d=date(2020,7,9)
 transfer(marcus_saving, chase_checking, 20000)
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -319,18 +324,18 @@ d=date(2020,7,10)
 robinhood.add_ETF('VXUS', 'International Stock', 50, expense_ratio=0.0008)
 robinhood.buy_ETF('VXUS', 100)
 # get detailed position ranked by details 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2020,7,11)
 uber_eats = GiftCard(name='UBER EATS', balance=0, cat='Uber Eats')
 transfer(chase_checking, uber_eats, 24, factor=1.85)
 l_gc += [uber_eats]
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2020,7,13)
@@ -343,9 +348,9 @@ transfer(chase_checking, chase_invest_trade, 20000)
 
 chase_checking.make_withdraw(397.26) # pay Amex Aspire
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 
@@ -366,9 +371,9 @@ chase_invest_trade.balance = 45675.88
 betterment_wealth.balances = 48628
 wealthfront.balance = 17126.59
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2020,7,16)
@@ -391,9 +396,9 @@ fidelity.balance = 2448.95
 chase_invest_trade.add_ETF('VOO', 'SP 500', 20, expense_ratio=0.0003)
 
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 
@@ -414,9 +419,9 @@ l_banks.append(yotta)
 chase_checking.make_withdraw(1409) # pay Amex
 
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -454,9 +459,9 @@ chase_invest_trade.add_bonds('VTIP', 'U.S. Inflation-Protected Bonds', 6, expens
 transfer(discover_saving, chase_checking, 10000, factor=1)
 
  
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -489,9 +494,9 @@ transfer(marcus_saving, chase_checking, 7000, factor=1)
 transfer(discover_saving, chase_checking, 8000, factor=1)
 transfer(betterment_wealth, chase_checking, 20000, factor=1)
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -509,9 +514,9 @@ chase_invest_trade.buy_ETF('VEA', 72)
 chase_invest_trade.buy_ETF('VWO', 43)
 chase_invest_trade.buy_bonds('BND', 10)
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -563,7 +568,7 @@ chase_checking.make_withdraw(45.44) # pay chase
 moomoo = BrokerAccount(name='MooMoo', balance=0, interest_rate=0.015)
 moomoo.restriction = 'able to Da Xin'
 transfer(chase_checking, moomoo, 1510, factor=1)
-
+l_brokers.append(moomoo)
 #----------------------------------------------------------------- 
 d=date(2020,9,6)
 chase_checking.make_withdraw(21.62) # pay discover
@@ -584,9 +589,9 @@ nordstrom_digit = GiftCard(name='NORDSTROM 2359', balance=25.0, cat='Nordstrom')
 nordstrom_digit.code = ('6168437045462359', '36425819')
 nordstrom_digit.balance = 0
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 #----------------------------------------------------------------- 
@@ -698,7 +703,6 @@ betterment_wealth.balance = 32042.59
 wealthfront.balance = 18684.10
 
 # broker account, reset cash and balance
-prices = get_static_prices()
 robinhood.cash = 2993.83
 robinhood.balance = robinhood.get_balance(prices)
 chase_invest_trade.cash = 154.89
@@ -716,12 +720,269 @@ transfer(chase_checking, chase_invest_trade, 20000, factor=1)
 chase_checking.make_withdraw(887.0)
 
 
-balances = output_balance(l_banks+l_brokers+l_robos, d=d)
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
-balances = output_balance(l_gc, d=d)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,11,17)
+robinhood.add_ETF(ID='LIT', number=50, full_name='Lithum ETF', expense_ratio=0.0075)
+
+fidelity_roth_ira = BrokerAccount(name='FIDELITY ROTH IRA', balance=0, interest_rate=0.03)
+fidelity__traditional = BrokerAccount(name='FIDELITY TRA IRA', balance=0, interest_rate=0.03)
+
+#----------------------------------------------------------------- 
+d=date(2020,11,23)
+chase_checking.make_withdraw(205.65) # pay discover
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,11,24)
+robinhood.sell_stocks("DAL", 30)
+robinhood.sell_stocks("LUV", 20)
+robinhood.buy_ETF('LIT', 30)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,11,27)
+chase_checking.make_withdraw(31.37) # pay chase
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 
+#----------------------------------------------------------------- 
+d=date(2020,11,29)
+chase_checking.make_withdraw(200.81) # pay citi
+
+bbb1 = GiftCard(name='BED BATH AND BEYOND 5144', balance=145.0, cat='bbb')
+bbb1.code = ('6189988221855144', '41433819')
+
+bbb1 = GiftCard(name='BED BATH AND BEYOND 5144', balance=105.0, cat='bbb')
+bbb1.code = ('6189988221949802', '60488080')
+
+robinhood.balance = robinhood.get_balance(prices)
+robinhood.cash = 1050.3
+
+
+
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+chase_invest_trade.cash = 20154.3
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+#----------------------------------------------------------------- 
+d=date(2020,11,30)
+chase_invest_trade.buy_bonds('BND', 49)
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+chase_invest_trade.cash = 15822.8
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,5)
+chase_checking.make_withdraw(686.44) # pay chase
+usbank_checking.make_withdraw(85.28) # pay usbank
+usbank_checking.make_withdraw(7.99) # pay amex
+chase_checking.make_withdraw(415.69) # pay discover
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,7)
+
+chase_invest_trade.buy_ETF('VTI', 3)
+chase_invest_trade.buy_ETF('VTV', 1)
+chase_invest_trade.buy_ETF('VOE', 1)
+chase_invest_trade.buy_ETF('VBR', 1)
+chase_invest_trade.buy_ETF('VEA', 9)
+chase_invest_trade.buy_ETF('VWO', 5)
+chase_invest_trade.buy_bonds('VTIP', 1)
+chase_invest_trade.buy_bonds('MUB', 1)
+chase_invest_trade.buy_bonds('BNDX', 2)
+chase_invest_trade.buy_bonds('EMB', 1)
+
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+chase_invest_trade.cash = 13921.99
+
+transfer(chase_checking, usbank_checking, 2000, factor=1)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+
+#----------------------------------------------------------------- 
+d=date(2020,12,7)
+transfer(chase_checking, usbank_checking, 500, factor=1)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+#----------------------------------------------------------------- 
+d=date(2020,12,10)
+
+madewell = GiftCard(name='MADEWELL', balance=25.0, cat='madewell')
+madewell.code = ('6006493863022456087', '5700')
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+
+#----------------------------------------------------------------- 
+d=date(2020,12,12)
+
+chase_checking.make_withdraw(61.65) # pay chase
+chase_checking.make_withdraw(18.0) # pay seed
+chase_checking.make_withdraw(50.25) # pay usbank
+chase_checking.make_withdraw(211.85) # pay discover
+chase_checking.make_withdraw(5.44) # pay citi
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+#----------------------------------------------------------------- 
+d=date(2020,12,15)
+
+usbank_checking.make_withdraw(2528.0) # special contribution
+
+#----------------------------------------------------------------- 
+d=date(2020,12,18)
+
+chase_checking.make_withdraw(20.57) # pay chase
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,21)
+
+# banks
+chase_checking.balance = 30415.26
+marcus_saving.balance = 355.61
+marcus_cd_7222.balance = 10275.26
+usbank_checking.balance = 184.01
+discover_saving.balance = 1122.67
+yotta.balance = 5060.88
+
+# brokers balance 
+chase_invest_trade.cash = 13921.99
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+chase_invest_trade.sell_bonds('EMB', 22.22-21.29)
+
+robinhood.cash = 1149.78
+robinhood.balance = robinhood.get_balance(prices)
+
+fidelity.cash = 0.0
+fidelity.balance = fidelity.get_balance(prices)
+fidelity.buy_MMF('SPAXX', 29.81-9.2)
+
+moomoo.cash = 1602.41
+
+# robot balance
+betterment_wealth.balance = 12700.48
+wealthfront.balance = 19545.24
+
+transfer(chase_checking, fidelity, 10000, factor=1)
+fidelity.add_bonds('FXNAX', 'US Bond', 322.061, expense_ratio=0.00025)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,21)
+robinhood.buy_stocks('BABA', 3)
+transfer(chase_checking, robinhood, 2000, factor=1)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+
+#----------------------------------------------------------------- 
+d=date(2020,12,26)
+chase_checking.make_withdraw(124.43) # pay discover
+chase_checking.make_withdraw(11.7) # pay citi
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,28)
+chase_invest_trade.sell_bonds('BND', 50)
+chase_invest_trade.sell_bonds('BNDX', 20)
+
+chase_invest_trade.buy_ETF('VTI', 4)
+chase_invest_trade.buy_ETF('VEA', 14.3)
+chase_invest_trade.buy_ETF('VTV', 2)
+chase_invest_trade.buy_ETF('VOE', 1)
+chase_invest_trade.buy_ETF('VBR', 1)
+chase_invest_trade.buy_ETF('VWO', 7)
+chase_invest_trade.buy_bonds('VTIP', 1)
+chase_invest_trade.buy_bonds('MUB', 2)
+chase_invest_trade.buy_bonds('EMB', 1)
+robinhood.buy_stocks('BABA', 5)
+
+fidelity.buy_bonds('FXNAX', 362.03)
+
+etrader =  BrokerAccount(name='E_TRADER', balance=0, interest_rate=0.03)
+l_brokers.append(etrader)
+transfer(chase_checking, etrader, 15000, factor=1)
+
+chase_invest_trade.cash = 16949
+fidelity.balance = fidelity.get_balance(prices)
+robinhood.balance = robinhood.get_balance(prices)
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+
+transfer(chase_invest_trade, chase_checking, 10000, factor=1)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+# buy BNDX in fidelity 
 
 # gc by categories 
 

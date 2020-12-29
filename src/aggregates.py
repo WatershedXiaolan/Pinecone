@@ -30,8 +30,15 @@ def sum_allocable_balance(l):
     print('Your current summation of allocable balance is {}'.format(ret))
     return ret
 
-def output_balance(l, d=date.today()):
+def output_balance(l_brokers, l_robos, l_banks, prices, d=date.today()):
     """get the current balance as a DataFrame, given a list of accounts"""
+    
+    # update brokers' balance
+    for broke in l_brokers:
+        broke.balance = broke.get_balance(prices)
+
+    # gather balance of each account 
+    l = l_brokers+l_robos+l_banks
     a = {}
     for act in l:
         a[act.name] = round(act.balance,2)
@@ -40,9 +47,40 @@ def output_balance(l, d=date.today()):
     b.drop(b.index[0], inplace=True)
     b.insert(0, "Date", d)
     b.reset_index(drop=True, inplace=True)
+
+    # get positions and stats
+    tot_stock_amt, tot_etf_amt, tot_bond_amt, tot_mmf_amt, tot_cash_amt = \
+                            get_positions(prices, l_brokers, l_robos, l_banks)
+    
+    b['Sum'] = round(b.iloc[:, 1:].sum(axis=1), 2) # get summation
+    b['Cash'] = round(tot_cash_amt + tot_mmf_amt, 2)
+    b['Stock'] = round(tot_stock_amt + tot_etf_amt, 2)
+    b['Bond'] = round(tot_bond_amt, 2)
+    b['S/(S+B) ratio'] = round((tot_etf_amt+tot_stock_amt)/(tot_etf_amt+tot_stock_amt+tot_bond_amt), 2)
+
+    # merge results and arrange order
+    names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+
+    cols = [n for n in b.columns if n not in names]
+    cols += names
+    b = b[cols]
     return b
 
-def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', filename='balances.csv'):
+def output_balance_gc(l, d=date.today()):
+    """get the current balance as a DataFrame, given a list of accounts"""
+    # gather balance of each account 
+    a = {}
+    for act in l:
+        a[act.name] = round(act.balance,2)
+    b  = pd.DataFrame(a.items()).T
+    b.columns = b.iloc[0]
+    b.drop(b.index[0], inplace=True)
+    b.insert(0, "Date", d)
+    b.reset_index(drop=True, inplace=True)
+
+    return b
+
+def write_balance_gc(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', filename='balances.csv'):
     """write balance to csv file. The current/Users/xiaolan/Documents/repos/FinProject/scripts """
     f = path.join(dir_name, filename)
     if path.exists(f):
@@ -54,6 +92,28 @@ def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', 
     else:
         b.to_csv(f)
         return b
+
+def write_balance(b, dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log', filename='balances.csv'):
+    """write balance to csv file. The current/Users/xiaolan/Documents/repos/FinProject/scripts """
+    f = path.join(dir_name, filename)
+    if path.exists(f):
+        df_old = pd.read_csv(f)
+        df_merge = df_old.append(b, sort=False).reset_index(drop=True)
+        df_merge.drop(columns=['Unnamed: 0'], axis=1, inplace=True)
+        if 'Sum' in df_merge.columns:
+            names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+
+            cols = [n for n in df_merge.columns if n not in names]
+            cols += names
+            df_merge = df_merge[cols]
+
+        df_merge.to_csv(f)
+        return df_merge
+    else:
+        b.to_csv(f)
+        return b
+
+
 
 def get_all_cb(l_cards):
     """credit card specific method"""
@@ -173,7 +233,7 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
     """gether all account, return cash, mmf, stock, etf and bond balances"""
     tot_stock_amt = 0; tot_etf_amt = 0; tot_bond_amt=0; tot_mmf_amt=0
     tot_cash_amt = 0
-    b_temp = 0
+
     for b in l_brokers:
         tot_stock_amt += sum([prices[k]*v[1] for k, v in b.get_stocks().items()])
         tot_etf_amt += sum([prices[k]*v[1] for k, v in b.get_ETF().items()])
@@ -187,10 +247,6 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
 
     for b in l_banks:
         tot_cash_amt += b.balance
-    
-
-
-    tot_cash_amt += b_temp
 
     return tot_stock_amt, tot_etf_amt, tot_bond_amt, tot_mmf_amt, tot_cash_amt
 

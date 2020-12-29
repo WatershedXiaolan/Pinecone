@@ -24,7 +24,7 @@ expensse_ratio = [['VTI' , 'ITOT', 'SCHB', 'VTV', 'SCHV', 'VOE' , \
     
 prices = get_static_prices()
 
-total = 86225
+total = 2500
 allocation = {}
 for l in target:
     allocation[l[0]] = (round(total * l[2], 2), l[1][0], round(total * l[2], 2)/prices[l[1][0]])
