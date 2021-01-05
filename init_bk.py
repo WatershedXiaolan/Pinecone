@@ -7,13 +7,17 @@ import pickle
 from datetime import date
 from src.plots import * 
 from src.get_prices import get_static_prices
-prices = get_static_prices()
-# delete log files
+from src.helpers import prep_log_folder, merge_bank_logs, merge_gc_logs
 import os, shutil
+
+# get new price
+prices = get_static_prices()
+
+# clean log folder
 folder = r'/Users/xiaolan/Documents/repos/FinProject/log/'
-for filename in os.listdir(folder):
-    file_path = os.path.join(folder, filename)
-    os.remove(file_path)
+prep_log_folder(folder)
+
+
 # initialize accounts and look-up tables
 # create bank accounts
 usbank_checking = BankAccount(name='US BANK CHECKING', balance=1860.63, interest_rate=0, month_fee=0)
@@ -1031,6 +1035,14 @@ _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2021,1,5)
 robinhood.add_stocks('CRM', 'Saleforce', 20)
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+merge_bank_logs(balances)
+balances = output_balance_gc(l_gc, d=d)
+merge_gc_logs(balances)
+
+
+
 
 # 策略
 #1. 往etrade里面转6000
