@@ -730,7 +730,7 @@ d=date(2020,11,17)
 robinhood.add_ETF(ID='LIT', number=50, full_name='Lithum ETF', expense_ratio=0.0075)
 
 fidelity_roth_ira = BrokerAccount(name='FIDELITY ROTH IRA', balance=0, interest_rate=0.03)
-fidelity__traditional = BrokerAccount(name='FIDELITY TRA IRA', balance=0, interest_rate=0.03)
+fidelity_traditional = BrokerAccount(name='FIDELITY TRA IRA', balance=0, interest_rate=0.03)
 
 #----------------------------------------------------------------- 
 d=date(2020,11,23)
@@ -965,9 +965,9 @@ robinhood.buy_stocks('BABA', 5)
 
 fidelity.buy_bonds('FXNAX', 362.03)
 
-etrader =  BrokerAccount(name='E_TRADER', balance=0, interest_rate=0.03)
-l_brokers.append(etrader)
-transfer(chase_checking, etrader, 15000, factor=1)
+etrade =  BrokerAccount(name='E_TRADER', balance=0, interest_rate=0.03)
+l_brokers.append(etrade)
+transfer(chase_checking, etrade, 15000, factor=1)
 
 chase_invest_trade.cash = 16949
 fidelity.balance = fidelity.get_balance(prices)
@@ -981,6 +981,61 @@ balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 _ = write_balance(balances)
 balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2020,12,28)
+robinhood.sell_ETF('VTI', 56)
+robinhood.balance = robinhood.get_balance(prices)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2021,1,1)
+chase_checking.make_withdraw(13.38) # pay discover
+chase_checking.make_withdraw(67.83) # pay united chase
+transfer(chase_checking, fidelity_traditional, 6000, factor=1)
+chase_checking.make_deposit(3517.36)
+
+robinhood.cash = 12409.01
+robinhood.balance = robinhood.get_balance(prices)
+
+chase_invest_trade.cash = 6956.18
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+
+fidelity.cash = 1541.55
+fidelity.balance = fidelity.get_balance(prices)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2021,1,4)
+etrade.add_ETF(ID='SPY', number=5, full_name='', expense_ratio=0.0009)
+etrade.cash = 13132.59
+etrade.balance = etrade.get_balance(prices)
+chase_checking.make_withdraw(17.64)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+_ = write_balance(balances)
+balances = output_balance_gc(l_gc, d=d)
+_ = write_balance(balances, filename='gc_balance.csv')
+
+#----------------------------------------------------------------- 
+d=date(2021,1,5)
+robinhood.add_stocks('CRM', 'Saleforce', 20)
+
+# 策略
+#1. 往etrade里面转6000
+#2. robinhood买600 VTI 5天
+#3. etrader买600 SPY 5天
 
 # buy BNDX in fidelity 
 
