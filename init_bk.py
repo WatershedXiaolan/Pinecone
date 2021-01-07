@@ -861,7 +861,6 @@ balances = output_balance_gc(l_gc, d=d)
 _ = write_balance(balances, filename='gc_balance.csv')
 
 
-
 #----------------------------------------------------------------- 
 d=date(2020,12,12)
 
@@ -1035,12 +1034,29 @@ _ = write_balance(balances, filename='gc_balance.csv')
 #----------------------------------------------------------------- 
 d=date(2021,1,5)
 robinhood.add_stocks('CRM', 'Saleforce', 20)
+etrade.buy_ETF('SPY', 5)
+robinhood.cash = 8019.21
+etrade.cash = 11276.99
+robinhood.balance = robinhood.get_balance(prices)
+etrade.balance = etrade.get_balance(prices)
+
+
+#----------------------------------------------------------------- 
+d=date(2021,1,6)
+etrade.buy_ETF('SPY', 5)
+etrade.cash = 9369.0
+etrade.balance = etrade.get_balance(prices)
+
+#----------------------------------------------------------------- 
+d=date(2021,1,7)
+etrade.buy_ETF('SPY', 5)
+etrade.cash = 7511.31
+etrade.balance = etrade.get_balance(prices)
 
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances)
 balances = output_balance_gc(l_gc, d=d)
 merge_gc_logs(balances)
-
 
 
 

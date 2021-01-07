@@ -1,6 +1,7 @@
 import json
 from yahoo_fin import stock_info as si
 from datetime import date
+import numpy as np
 
 def get_static_prices(fn=r'/Users/xiaolan/Documents/repos/FinProject/local_src/static_prices.json'):
     """
@@ -35,6 +36,12 @@ if __name__ == "__main__":
     pre_data = get_static_prices()
     l = list(pre_data.keys())
     data = get_live_prices(l)
+
+    # if can't get live price, replace with existing price
+    for s, p in data.items():
+        if np.isnan(p):
+            data[s] = pre_data[s]
+
     save_prices(data)
     print('Done')
     
