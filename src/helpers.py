@@ -43,6 +43,11 @@ def merge_logs(balances, cache_file, save_file):
     merge current balance with the existing balance sheets
     """
     existing = pd.read_csv(cache_file)
+    existing.Date = pd.to_datetime(existing.Date)
+    balances.Date = pd.to_datetime(balances.Date)
+    # only keep record before current
+    existing = existing[existing.Date<balances.Date.values[0]]
+
     merged = pd.concat([existing, balances], axis=0, sort=False).fillna(0).reset_index(drop=True)
     merged = reorg(merged)
     merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)
