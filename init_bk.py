@@ -1041,10 +1041,6 @@ etrade.cash = 11276.99
 robinhood.balance = robinhood.get_balance(prices)
 etrade.balance = etrade.get_balance(prices)
 
-balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
-merge_bank_logs(balances)
-balances = output_balance_gc(l_gc, d=d)
-merge_gc_logs(balances)
 
 #----------------------------------------------------------------- 
 d=date(2021,1,6)
@@ -1052,11 +1048,39 @@ etrade.buy_ETF('SPY', 5)
 etrade.cash = 9369.0
 etrade.balance = etrade.get_balance(prices)
 
+
+
 #----------------------------------------------------------------- 
 d=date(2021,1,7)
 etrade.buy_ETF('SPY', 5)
 etrade.cash = 7511.31
 etrade.balance = etrade.get_balance(prices)
+
+# correct balance
+chase_checking.balance = 10813.97
+chase_checking.make_withdraw(176.13) # pay united
+chase_checking.make_withdraw(17.30) # pay discover
+chase_checking.make_withdraw(62.51) # pay usbank
+
+chase_invest_trade.buy_ETF('VTI', 127.97-127.47)
+chase_invest_trade.buy_bonds('BND', 161.13-160.09)
+chase_invest_trade.buy_ETF('VWO', 229.53-228.17)
+chase_invest_trade.buy_bonds('BNDX', 124.91-124.46)
+chase_invest_trade.buy_ETF('VTV', 54.7-54.35)
+chase_invest_trade.buy_ETF('VOE', 45.55-45.27)
+chase_invest_trade.buy_ETF('VBR', 35.4-35.19)
+chase_invest_trade.buy_bonds('MUB', 47.4-47.25)
+chase_invest_trade.buy_bonds('EMB', 22.37-22.29)
+chase_invest_trade.buy_bonds('AGG', 12.10-12.07)
+
+chase_invest_trade.balance = chase_invest_trade.get_balance(prices)
+robinhood.balance = robinhood.get_balance(prices)
+
+fidelity.buy_bonds('FXNAX', 684.344-684.09)
+fidelity.balance = fidelity.get_balance(prices)
+
+etrade.balance = etrade.get_balance(prices)
+
 
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances)
