@@ -1,0 +1,7 @@
+runme_*
+*ipynb
+log*
+local_src*
+.vscode
+.ipynb_checkpoints
+__pycache__
