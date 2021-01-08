@@ -59,11 +59,12 @@ def merge_logs(balances, cache_file, save_file):
 def reorg(df_merge):
     """clean up unnecessary columns and reorder them to have the statistics always at the end"""
 
-
+    # drop trailing columns
     df_merge.drop(columns=['Unnamed: 0'], axis=1, inplace=True)
 
     df_merge['Date'] = pd.to_datetime(df_merge['Date'])
 
+    # reorder columns
     if 'Date'  in df_merge.columns:
         names = ['Date']
         cols = [n for n in df_merge.columns if n not in names]
@@ -75,5 +76,18 @@ def reorg(df_merge):
         cols = [n for n in df_merge.columns if n not in names]
         cols += names
         df_merge = df_merge[cols]
+
+    # sort rows by date
+    df_merge = df_merge.sort_values(by=['Date'], ascending=False).reset_index(drop=True)
+    
+
+    # sort columns by the most recent balances 
+    names = ['Date', 'Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+    accts = [n for n in df_merge.columns if n not in names]
+    balances = sorted([(df_merge.loc[0, n], n) for n in accts], reverse=True)
+    col_orders = [temp[1] for temp in balances]
+    col_orders = ['Date'] + col_orders + ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+    df_merge = df_merge[col_orders]
+
 
     return df_merge
