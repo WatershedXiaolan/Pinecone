@@ -32,6 +32,12 @@ def merge_bank_logs(balances, cache_file='./log/balances_cache.csv', save_file='
     """
     merge_logs(balances, cache_file, save_file)
 
+def merge_retirement_logs(balances, cache_file='./log/retire_balances_cache.csv', save_file='./log/retire_balances.csv'):
+    """
+    merge current balance with the existing balance sheets
+    """
+    merge_logs(balances, cache_file, save_file)    
+
 def merge_gc_logs(balances, cache_file='./log/gc_balance_cache.csv', save_file='./log/gc_balance.csv'):
     """
     merge current balance with the existing balance sheets
@@ -42,16 +48,23 @@ def merge_logs(balances, cache_file, save_file):
     """
     merge current balance with the existing balance sheets
     """
-    existing = pd.read_csv(cache_file)
-    existing.Date = pd.to_datetime(existing.Date)
     balances.Date = pd.to_datetime(balances.Date)
-    # only keep record before current
-    existing = existing[existing.Date<balances.Date.values[0]]
 
-    merged = pd.concat([existing, balances], axis=0, sort=False).fillna(0).reset_index(drop=True)
+    if os.path.exists(cache_file):
+        existing = pd.read_csv(cache_file)
+        existing.Date = pd.to_datetime(existing.Date)
+        
+        # only keep record before current
+        existing = existing[existing.Date<balances.Date.values[0]]
+
+        merged = pd.concat([existing, balances], axis=0, sort=False).fillna(0).reset_index(drop=True)
+
+        os.remove(cache_file)
+    else:
+        merged = balances
+
     merged = reorg(merged)
-    merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)
-    os.remove(cache_file)
+    merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)    
     merged.to_csv(save_file)
     print('file saved in ', save_file)
 
@@ -60,7 +73,7 @@ def reorg(df_merge):
     """clean up unnecessary columns and reorder them to have the statistics always at the end"""
 
     # drop trailing columns
-    df_merge.drop(columns=['Unnamed: 0'], axis=1, inplace=True)
+    df_merge.drop(columns=[n for n in df_merge if 'unname' in n.lower()], axis=1, inplace=True)
 
     df_merge['Date'] = pd.to_datetime(df_merge['Date'])
 
