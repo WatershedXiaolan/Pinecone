@@ -82,11 +82,14 @@ def reorg(df_merge):
     
 
     # sort columns by the most recent balances 
-    names = ['Date', 'Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
-    accts = [n for n in df_merge.columns if n not in names]
+    if 'Sum' in df_merge.columns:  
+        names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+    else:
+        names = []
+    accts = [n for n in df_merge.columns if n not in names+['Date']]
     balances = sorted([(df_merge.loc[0, n], n) for n in accts], reverse=True)
     col_orders = [temp[1] for temp in balances]
-    col_orders = ['Date'] + col_orders + ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+    col_orders = ['Date'] + col_orders + names
     df_merge = df_merge[col_orders]
 
 
