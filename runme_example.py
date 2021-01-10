@@ -39,7 +39,6 @@ d=date(2021,1,1)
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
 
-
 # -------
 # beginning of transaction
 d=date(2021,1,2)
@@ -61,20 +60,9 @@ merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_fi
 d=date(2021,1,4)
 a_bank.make_deposit(200)
 
-
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
 
-
-
-
+#---ALL_END-------
 remove_cache(folder)
-
-# if inside: replace
-# if not: add or insert into the right place
-# dont remove the cache
-# remove cache at the very end of the scripts
-
-# existing 1: replace 1 and add 2;
-# existing 1 and 3: replace 1, insert 2 and add 3 
 
