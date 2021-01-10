@@ -10,7 +10,7 @@ def prep_log_folder(folder):
     move the existing log files to cache for final merge
     and clean up the directory
     """
-    filenames = ['gc_balance.csv', 'balances.csv', 'retire_balance.csv']
+    filenames = ['gc_balance.csv', 'balances.csv', 'retire_balances.csv']
     for filename in filenames:
         file_path = os.path.join(folder, filename)
         # copy balance file if one exist

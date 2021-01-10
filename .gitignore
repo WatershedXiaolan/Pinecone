@@ -1,6 +1,8 @@
-runme_*
+runme_xl*
+runme_qm*
 *ipynb
-log*
+log
+log_cqm
 local_src*
 .vscode
 .ipynb_checkpoints
