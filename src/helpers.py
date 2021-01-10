@@ -25,6 +25,19 @@ def prep_log_folder(folder):
             
     print('cleaned log folder!')
 
+def remove_cache(folder):
+    filenames = ['gc_balance_cache.csv', 'balances_cache.csv', 'retire_balances_cache.csv']
+    for filename in filenames:
+        file_path = os.path.join(folder, filename)
+        try:
+            os.remove(file_path)
+        except:
+            pass
+    
+    print('removed all cache!')
+
+
+    
 
 def merge_bank_logs(balances, cache_file='./log/balances_cache.csv', save_file='./log/balances.csv'):
     """
@@ -55,17 +68,19 @@ def merge_logs(balances, cache_file, save_file):
         existing.Date = pd.to_datetime(existing.Date)
         
         # only keep record before current
-        existing = existing[existing.Date<balances.Date.values[0]]
+        # existing = existing[existing.Date<balances.Date.values[0]]
 
         merged = pd.concat([existing, balances], axis=0, sort=False).fillna(0).reset_index(drop=True)
 
-        os.remove(cache_file)
+        #os.remove(cache_file)
     else:
         merged = balances
 
     merged = reorg(merged)
     merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)    
     merged.to_csv(save_file)
+    merged.to_csv(cache_file)
+
     print('file saved in ', save_file)
 
 

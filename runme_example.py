@@ -6,7 +6,7 @@ import pickle
 from datetime import date
 from src.plots import * 
 from src.get_prices import get_static_prices
-from src.helpers import prep_log_folder, merge_bank_logs, merge_gc_logs, merge_retirement_logs
+from src.helpers import prep_log_folder, merge_bank_logs, merge_gc_logs, merge_retirement_logs, remove_cache
 import os, shutil
 
 # get new price
@@ -39,11 +39,42 @@ d=date(2021,1,1)
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
 
+
 # -------
 # beginning of transaction
 d=date(2021,1,2)
 a_bank.make_deposit(100)
 
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+
+# -------
+# beginning of transaction
+d=date(2021,1,3)
+a_bank.make_deposit(101)
 
 balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
 merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+
+# -------
+# beginning of transaction
+d=date(2021,1,4)
+a_bank.make_deposit(200)
+
+
+balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
+merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+
+
+
+
+remove_cache(folder)
+
+# if inside: replace
+# if not: add or insert into the right place
+# dont remove the cache
+# remove cache at the very end of the scripts
+
+# existing 1: replace 1 and add 2;
+# existing 1 and 3: replace 1, insert 2 and add 3 
+
