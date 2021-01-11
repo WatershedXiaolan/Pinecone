@@ -1,6 +1,6 @@
-# FinProject
+# Pinecore
 
-This set of scripts helps personal asseting management. It currently supports managing 
+Pinecore helps personal asseting management. It currently supports managing 
 
 - [ ] Bank account
 - [ ] Robo advisor account
