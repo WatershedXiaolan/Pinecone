@@ -1,9 +1,11 @@
-import os, shutil
+import os
+import shutil
 import pandas as pd
 
 
 def h():
     print('h')
+
 
 def prep_log_folder(folder):
     """
@@ -100,9 +102,9 @@ def reorg(df_merge):
         df_merge = df_merge[cols]
 
     if 'Sum' in df_merge.columns:
-        names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+        names = ['Sum', 'Cash', 'Stock', 'Bond', 'S/(S+B) ratio']
         cols = [n for n in df_merge.columns if n not in names]
-        cols += names
+        cols = names + cols
         df_merge = df_merge[cols]
 
     # sort rows by date
@@ -111,13 +113,13 @@ def reorg(df_merge):
 
     # sort columns by the most recent balances 
     if 'Sum' in df_merge.columns:  
-        names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+        names = ['Sum', 'Cash', 'Stock', 'Bond', 'S/(S+B) ratio']
     else:
         names = []
     accts = [n for n in df_merge.columns if n not in names+['Date']]
     balances = sorted([(df_merge.loc[0, n], n) for n in accts], reverse=True)
     col_orders = [temp[1] for temp in balances]
-    col_orders = ['Date'] + col_orders + names
+    col_orders = ['Date'] + names + col_orders
     df_merge = df_merge[col_orders]
 
 
