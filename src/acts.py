@@ -10,7 +10,7 @@ import pickle
 
 class Account:
     """
-    This is the abstract account object. 
+    This is the abstract account object.
     It allows set balance, check balance, withdraw, and
     make deposit.
     """
@@ -65,7 +65,7 @@ class Account:
         self._balance -= value
         self._balance = round(self._balance, 2)
         # print('You made a withdraw of {0}. Current balance is {1}' \
-        # .format(value, self._balance)) 
+        # .format(value, self._balance))
 
 
 class MoneyAccount(Account):
@@ -91,14 +91,14 @@ class MoneyAccount(Account):
         # print('Getting monthly fee...')
         # time.sleep(0.5)
         return self._month_fee
-    
+
     @monthly_fee.setter
     def monthly_fee(self, fee):
         """set monthly fee"""
         # print('Setting monthly fee...')
         # time.sleep(0.5)
         self._month_fee = fee
-        # print('monthly fee is {}'.format(fee))    
+        # print('monthly fee is {}'.format(fee))
 
     @property
     def min_amount(self):
@@ -106,14 +106,14 @@ class MoneyAccount(Account):
         # print('Getting minimum amount...')
         # time.sleep(0.5)
         return self._min_amount
-    
+
     @min_amount.setter
     def min_amount(self, m):
         """set minimum amount"""
         # print('Setting minimum amount...')
         # time.sleep(0.5)
         self._min_amount = m
-        # print('minimum amount is {}'.format(m))    
+        # print('minimum amount is {}'.format(m))
 
     def add_alert(self, alert):
         assert len(alert) == 2, 'please add a valid alert with len(alert=2)'
@@ -125,7 +125,7 @@ class MoneyAccount(Account):
             for item in self._alert.items():
                 print('{}: {}'.format(item[0], item[1]))
         return self._alert
-    
+
     def remove_alert(self, key):
         if key in self._alert:
             temp = self._alert.pop(key)
@@ -136,17 +136,17 @@ class MoneyAccount(Account):
     @property
     def annual_pct_fee(self):
         """get annual percentage fee"""
-        #print('Getting annual percentage fee...')
-        #time.sleep(0.5)
+        # print('Getting annual percentage fee...')
+        # time.sleep(0.5)
         return self._annual_pct_fee
-    
+
     @annual_pct_fee.setter
     def annual_pct_fee(self, fee):
         """set annual percentage fee"""
         # print('Setting annual percentage fee...')
         # time.sleep(0.5)
         self._annual_pct_fee = fee
-        # print('annual percentage fee is {}%'.format(fee*100))    
+        # print('annual percentage fee is {}%'.format(fee*100))
 
     @property
     def interest_rate(self):
@@ -154,22 +154,22 @@ class MoneyAccount(Account):
         # print('Getting interest rate...')
         # time.sleep(0.5)
         return self._interest_rate
-    
+
     @interest_rate.setter
     def interest_rate(self, interest_rate):
         """set interest rate"""
         # print('Setting interest rate...')
         # time.sleep(0.5)
         self._interest_rate = interest_rate
-        # print('interest rate. is {}%'.format(interest_rate*100))   
-    
+        # print('interest rate. is {}%'.format(interest_rate*100))
+
     def allocable_mount(self):
         """get allocatable amount without violating minimum balance"""
         ret = round(self._balance - self._min_amount, 2)
         # print('Allocable amount is {}'.format(ret))
         return ret
 
-    def forcast(self, interest_rate=None, 
+    def forcast(self, interest_rate=None,
                 months=0, verbose=True, d=date.today()):
         """
         return future values given current value, inttest rate and time period
@@ -229,7 +229,7 @@ class MoneyAccount(Account):
         print('You will have on average {0} as of {1}, \
               with a confidence interval of {2}'.format(m, future_date, h))
         return m, m_d, m_u
-    
+
     @staticmethod
     def mean_confidence_interval(data, confidence=0.95):
         """calculate confidence interval"""
@@ -240,7 +240,7 @@ class MoneyAccount(Account):
         m, se = np.mean(a), scipy.stats.sem(a)
         h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
         return m, m-h, m+h
-    
+
     @staticmethod
     def add_months(sourcedate, months):
         """add months to current date"""
@@ -273,7 +273,7 @@ class BankAccount(MoneyAccount):
         # print('Setting monthly fee...')
         # time.sleep(0.5)
         self._month_fee = fee
-        # print('monthly fee is {}'.format(fee))    
+        # print('monthly fee is {}'.format(fee))
 
 
 class RoboAccount(MoneyAccount):
@@ -285,22 +285,22 @@ class RoboAccount(MoneyAccount):
         self._annual_pct_fee = annual_pct_fee
         self._alert = {}
         self._stock_ratio = 0.5
-    
+
     @property
     def annual_pct_fee(self):
         """get annual percentage fee"""
         return self._annual_pct_fee
-    
+
     @annual_pct_fee.setter
     def annual_pct_fee(self, fee):
         """set annual percentage fee"""
         self._annual_pct_fee = fee
-    
+
     @property
     def stock_ratio(self):
         """get stock ratio"""
         return self._stock_ratio
-    
+
     @stock_ratio.setter
     def stock_ratio(self, r):
         """set stock ratio"""
@@ -331,7 +331,7 @@ class BrokerAccount(MoneyAccount):
         blc += sum([prices[k]*v[1] for k, v in self.get_MMF().items()])
         blc += self._cash
         return blc
-    
+
     def make_deposit(self, value):
         """adapt from base class
         add fund to the cash part"""
@@ -340,7 +340,7 @@ class BrokerAccount(MoneyAccount):
         self._balance = round(self._balance, 2)
         self._cash += value
         self._cash = round(self._cash, 2)
-    
+
     def make_withdraw(self, value):
         """adapt from base class
         withdraw fund from the cash part"""
@@ -358,7 +358,7 @@ class BrokerAccount(MoneyAccount):
     @property
     def d(self):
         return self._d
-    
+
     @d.setter
     def d(self, d):
         self._d = d
@@ -366,7 +366,7 @@ class BrokerAccount(MoneyAccount):
     @property
     def cash(self):
         return self._cash
-    
+
     @cash.setter
     def cash(self, cash):
         self._cash = cash
@@ -380,7 +380,7 @@ class BrokerAccount(MoneyAccount):
 
     def add_stocks(self, ID, full_name, number):
         self._stocks[ID] = (full_name, number)
-    
+
     def get_stocks(self):
         return self._stocks
 
@@ -453,7 +453,7 @@ class BrokerAccount(MoneyAccount):
 
     def get_position(self, ID):
         """
-        return total amount of a stock/etf/bond 
+        return total amount of a stock/etf/bond
         and its pct position in porfolio
         """
         assert ID in self._stocks or ID in self._etfs or ID in self._bonds
@@ -462,7 +462,7 @@ class BrokerAccount(MoneyAccount):
         price = self.get_price(ID, self._d)
         amount = price * number
         return amount, round(amount/self._balance, 2)
-    
+
     def get_stock_positions(self):
         IDs = self._stocks.keys()
         prices = [self.get_price(id, self._d) for id in IDs]
@@ -596,29 +596,30 @@ class CreditCard:
     def ftf(self):
         """get foreign transaction fee (boolen)"""
         return self._ftf
-    
+
     @ftf.setter
     def ftf(self, b):
         """set foreign transaction fee (boolen)"""
         self._ftf = b
 
-    def add_cat(self, cat, pct=0, type_='cash', expire=date(2999,1,1), start=date(1000,1,1)):
+    def add_cat(self, cat, pct=0, type_='cash',
+                expire=date(2999, 1, 1), start=date(1000, 1, 1)):
         """add cash back category"""
         self._category[cat] = (pct, type_, start, expire)
-    
+
     def get_cat(self, c=None):
         """return cash back categories"""
         if not c:
             return self._category
         else:
             return self._category[c]
-    
-    def add_reimburse(self, name, balance=0, expire=date(2999,1,1)):
+
+    def add_reimburse(self, name, balance=0, expire=date(2999, 1, 1)):
         self._reimburse[name] = (balance, expire)
 
     def get_reimburse(self):
         return self._reimburse
-    
+
     def withdraw_from_reimburse(self, name, v):
         assert name in self._reimburse, "This category is not available"
         balance, expire = self._reimburse[name]
@@ -630,21 +631,19 @@ class CreditCard:
         assert name in self._reimburse, "item not available"
         self._reimburse.pop(name)
 
-
     def add_membership(self, m):
         """add available membership"""
         self._membership.append(m)
-    
+
     def get_membership(self, c=None):
         """return available membership"""
         return self._membership
-   
+
     def remove_expired_cat(self):
         for key, value in self._category.items():
-            if value[2] < date.today(): # expired
+            if value[2] < date.today():  # expired
                 self._category.pop(key)
         return self._category
-
 
     def add_alert(self, *awargs):
         for key, value in awargs:
@@ -652,33 +651,24 @@ class CreditCard:
 
     def get_alert(self):
         return self._alert
-    
+
     def print_alert(self, latest=False):
-        if len(self._alert)==0:
+        if len(self._alert) == 0:
             print("No alert available")
-        else: 
+        else:
             if latest:
                 key = min(self._alert)
-                print('Most recent alert: {}, {}'.format(key, self._alert[key]))
+                print('Most recent alert: {}, {}'.format(key,
+                                                         self._alert[key]))
             else:
                 for key, value in self._alert.items():
                     print('Alert: {}, {}'.format(key, value))
+
 
 def transfer(out_acct, in_acct, amount, factor=1):
     """perform transfer from one account to another. """
     out_acct.make_withdraw(amount)
     in_acct.make_deposit(amount*factor)
-    log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name, in_acct.name, amount)
-    #print(log)
-
-
-
-# TODO: add program balances 
-"""
-A 401(k) or another employer-sponsored plan.
-An individual retirement account.
-A self-directed, taxable brokerage account.
-An account with a robo-advisor.
-Cash held in savings accounts, money market accounts or invested in certificates of deposit.
-Peer-to-peer lending accounts.
-"""
+    log = 'Made a tranfer from {} to {} at a value of {}'.format(out_acct.name,
+                                                                 in_acct.name,
+                                                                 amount)

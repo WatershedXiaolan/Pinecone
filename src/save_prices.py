@@ -19,5 +19,4 @@ if __name__ == '__main__':
                  'VOO': 290.31,
                  'date': str(date.today())}
     write_prices(r'/Users/xiaolan/Documents/repos/FinProject/ \
-                 local_src/static_prices.json', price_set)     
-                    
+                 local_src/static_prices.json', price_set)
