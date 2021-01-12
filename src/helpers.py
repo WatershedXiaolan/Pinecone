@@ -51,7 +51,7 @@ def merge_retirement_logs(balances,
     """
     merge current balance with the existing balance sheets
     """
-    merge_logs(balances, cache_file, save_file)    
+    merge_logs(balances, cache_file, save_file)
 
 
 def merge_gc_logs(balances, cache_file='./log/gc_balance_cache.csv',
@@ -79,7 +79,7 @@ def merge_logs(balances, cache_file, save_file):
         merged = balances
 
     merged = reorg(merged)
-    merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)    
+    merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)
     merged.to_csv(save_file)
     merged.to_csv(cache_file)
 
@@ -88,7 +88,7 @@ def merge_logs(balances, cache_file, save_file):
 
 def reorg(df_merge):
     """
-    clean up unnecessary columns and reorder them to have the 
+    clean up unnecessary columns and reorder them to have the
     statistics always at the end
     """
 
@@ -113,7 +113,7 @@ def reorg(df_merge):
     # sort rows by date
     df_merge = df_merge.sort_values(by=['Date'],
                                     ascending=False).reset_index(drop=True)
-                                    
+
     # sort columns by the most recent balances
     if 'Sum' in df_merge.columns:
         names = ['Sum', 'Cash', 'Stock', 'Bond', 'S/(S+B) ratio']
@@ -124,5 +124,5 @@ def reorg(df_merge):
     col_orders = [temp[1] for temp in balances]
     col_orders = ['Date'] + names + col_orders
     df_merge = df_merge[col_orders]
-    
+
     return df_merge
