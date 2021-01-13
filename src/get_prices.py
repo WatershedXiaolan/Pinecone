@@ -4,8 +4,8 @@ from datetime import date
 import numpy as np
 
 
-def get_static_prices(fn=r'/Users/xiaolan/Documents/repos/FinProject/ \
-                          local_src/static_prices.json'):
+def get_static_prices(
+        fn=r'/Users/xiaolan/Documents/repos/FinProject/local_src/static_prices.json'):
     """
     Get pre-saved prices to calculate positions. This is to speed up
     position calculation by avoiding the time-consuming

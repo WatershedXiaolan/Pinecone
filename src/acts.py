@@ -6,6 +6,7 @@ import numpy as np
 import scipy.stats
 import time
 import pickle
+from yahoo_fin import stock_info as si
 
 
 class Account:
@@ -236,7 +237,7 @@ class MoneyAccount(Account):
         assert isinstance(data, np.ndarray) or isinstance(data, list)
         a = 1.0 * np.array(data)
         n = len(a)
-        assert n > =3, 'not enough data to give confidence interval'
+        assert n >= 3, 'not enough data to give confidence interval'
         m, se = np.mean(a), scipy.stats.sem(a)
         h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
         return m, m-h, m+h
@@ -411,6 +412,71 @@ class BrokerAccount(MoneyAccount):
         assert current >= number, 'not enough stocks to sell'
         self._etfs[ID] = (self._etfs[ID][0], self._etfs[ID][1]-number,
                           self._etfs[ID][2])
+
+    def buy_sell_auto(self, code, number, category, action):
+        """
+        Base function for buying anything.
+        categories = ['ETF', 'Stock', 'MMF', 'Bond']
+        It will:
+        1. update inventories by adding <number> of entity
+        2. read the current or historical price when this transaction happens
+        3. update cash -= number * price
+        """
+
+        # 0. check if category and action are supported
+        assert category in ['ETF', 'Stock', 'MMF', 'Bond'], \
+            'please provide a valid category. \
+             ETF, Stock, MMF and Bond are supported.'
+        assert action in ['buy', 'sell'], \
+            'please provide a valid action. \
+             buy and sell are supported.'
+        # 1. update inventory
+        switcher = {
+            'ETF_buy': self.buy_ETF,
+            'Stock_buy': self.buy_stocks,
+            'MMF_buy': self.buy_MMF,
+            'Bond_buy': self.buy_bonds,
+            'ETF_sell': self.sell_ETF,
+            'Stock_buy': self.sell_stocks,
+            'MMF_buy': self.sell_MMF,
+            'Bond_buy': self.sell_bonds
+        }
+
+        trans_function = switcher.get(category+'_'+action, '')
+        trans_function(code, number)
+
+        # 2. read the current price.
+        # TODO: historical price when this transaction happens
+        price = si.get_live_price(code.lower())
+        if action == 'sell':
+            price *= -1
+
+        # 3. update cash -= number * price
+        self.cash -= price * number
+
+    def buy_ETF_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='ETF', action='buy')
+
+    def buy_stock_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='Stock', action='buy')
+
+    def buy_MMF_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='MMF', action='buy')
+
+    def buy_bond_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='Bond', action='buy')
+
+    def sell_ETF_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='ETF', action='sell')
+
+    def sell_stock_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='Stock', action='sell')
+
+    def sell_MMF_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='MMF', action='sell')
+
+    def sell_bond_auto(self, code, number):
+        self.buy_sell_auto(code, number, category='Bond', action='sell')
 
     def add_MMF(self, ID, full_name, number, expense_ratio):
         self._mmf[ID] = (full_name, number, expense_ratio)

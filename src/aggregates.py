@@ -46,7 +46,7 @@ def output_balance(l_brokers, l_robos, l_banks, prices, d=date.today()):
     accts = l_brokers+l_robos+l_banks
     balances = {}
     for acct in accts:
-        balances[act.name] = round(acct.balance, 2)
+        balances[acct.name] = round(acct.balance, 2)
     balances = pd.DataFrame(balances.items()).T
     balances.columns = balances.iloc[0]
     balances.drop(balances.index[0], inplace=True)
