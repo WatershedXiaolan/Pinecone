@@ -415,7 +415,7 @@ class BrokerAccount(MoneyAccount):
 
     def buy_sell_auto(self, code, number, category, action):
         """
-        Base function for buying anything.
+        Base function for buying or selling anything.
         categories = ['ETF', 'Stock', 'MMF', 'Bond']
         It will:
         1. update inventories by adding <number> of entity
