@@ -76,6 +76,63 @@ def output_balance(l_brokers, l_robos, l_banks, prices, d=date.today()):
     return balances
 
 
+def output_balance_with_history_price(l_brokers,
+                                      l_robos,
+                                      l_banks,
+                                      d=date.today(),
+                                      h_prices_path=('/Users/xiaolan/Documents'
+                                                     '/repos/FinProject/local_src'
+                                                     '/historical_prices.csv')):
+    """
+    get the historical balance as a DataFrame, given a list of accounts
+    """
+
+    # update brokers' balance
+    for broker in l_brokers:
+        broker.balance \
+            = broker.get_past_balance(d,
+                                      h_prices_path=h_prices_path)
+
+    # gather balance of each account
+    accts = l_brokers+l_robos+l_banks
+    balances = {}
+    for acct in accts:
+        balances[acct.name] = round(acct.balance, 2)
+    balances = pd.DataFrame(balances.items()).T
+    balances.columns = balances.iloc[0]
+    balances.drop(balances.index[0], inplace=True)
+    balances.insert(0, "Date", d)
+    balances.reset_index(drop=True, inplace=True)
+
+    # get historical prices
+    h_prices = pd.read_csv(h_prices_path)
+    prices = h_prices[h_prices.date == d.strftime("%Y-%m-%d")]
+    prices = {prices.iloc[i].ticker: prices.iloc[i].price
+              for i in range(prices.shape[0])}
+
+    # get positions and stats
+    tot_stock_amt, tot_etf_amt, tot_bond_amt, tot_mmf_amt, tot_cash_amt = \
+        get_positions(prices, l_brokers, l_robos, l_banks)
+
+    # get summation and other stats
+    balances['Sum'] = round(balances.iloc[:, 1:].sum(axis=1), 2)
+    balances['Cash'] = round(tot_cash_amt + tot_mmf_amt, 2)
+    balances['Stock'] = round(tot_stock_amt + tot_etf_amt, 2)
+    balances['Bond'] = round(tot_bond_amt, 2)
+    balances['S/(S+B) ratio'] = round((tot_etf_amt+tot_stock_amt)
+                                      / (tot_etf_amt
+                                         + tot_stock_amt
+                                         + tot_bond_amt), 2)
+
+    # merge results and arrange order
+    names = ['Cash', 'Stock', 'Bond', 'Sum', 'S/(S+B) ratio']
+
+    cols = [n for n in balances.columns if n not in names]
+    cols += names
+    balances = balances[cols]
+    return balances
+
+
 def output_balance_gc(accts, d=date.today()):
     """get the current balance as a DataFrame, given a list of accounts"""
 

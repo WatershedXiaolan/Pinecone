@@ -7,6 +7,7 @@ import scipy.stats
 import time
 import pickle
 from yahoo_fin import stock_info as si
+import pandas as pd
 
 
 class Account:
@@ -320,7 +321,7 @@ class BrokerAccount(MoneyAccount):
         self._bonds = {}
         self._mmf = {}
         self._d = d
-        self._cash = 0
+        self._cash = self.balance
 
     def get_balance(self, prices):
         """only for broker acct
@@ -332,6 +333,69 @@ class BrokerAccount(MoneyAccount):
         blc += sum([prices[k]*v[1] for k, v in self.get_MMF().items()])
         blc += self._cash
         return blc
+
+    def get_past_balance(self,
+                         d,
+                         h_prices_path=('/Users/xiaolan/Documents'
+                                        '/repos/FinProject/local_src'
+                                        '/historical_prices.csv')):
+
+        """
+        only for broker acct
+        calculate past balance from all positions
+        given a historical price sheet
+        TODO: if the price at a certain date is not available, update the date 
+        """
+        # proposed order
+
+        # 1. get historical price
+        # 2. get all tickers
+        # 3. go through the historical price.
+        # 3-1. if price not available: get price and update price list
+        # 4. calculate balance
+        # 5. update price set if needed
+
+        h_prices = pd.read_csv(h_prices_path)
+
+        blc = 0
+        prices = h_prices[h_prices.date == d.strftime("%Y-%m-%d")]
+        available_tickers = prices.ticker.tolist()
+        num_h_prices_entries = h_prices.shape[0]
+
+        for get_p in [self.get_stocks,
+                      self.get_ETF,
+                      self.get_bonds,
+                      self.get_MMF]:
+
+            for ticker, params in get_p().items():
+                position = params[1]
+                if position != 0:
+                    if ticker in available_tickers:
+                        price = prices[prices.ticker == ticker].price.values[0]
+                    else:
+                        # TODO: add read price and update
+                        # historical price database
+                        new_price = si.get_data(ticker.lower(),
+                                                start_date=d,
+                                                end_date=d+timedelta(days=1)
+                                                )
+
+                        new_price['price'] = (new_price['open']
+                                              + new_price['close'])/2
+                        new_price = new_price[['ticker', 'price']] \
+                            .reset_index().rename(columns={'index': 'date'})
+                        new_price.date = d.strftime("%Y-%m-%d")
+                        h_prices = pd.concat([h_prices, new_price], axis=0,
+                                             sort=False).fillna(0).reset_index(drop=True)
+
+                        price = new_price.price.values[0]
+
+                    blc += position * price
+
+        if num_h_prices_entries != h_prices.shape[0]:
+            h_prices.to_csv(h_prices_path, index=False)
+        blc += self._cash
+        return round(blc, 2)
 
     def make_deposit(self, value):
         """adapt from base class
@@ -413,7 +477,7 @@ class BrokerAccount(MoneyAccount):
         self._etfs[ID] = (self._etfs[ID][0], self._etfs[ID][1]-number,
                           self._etfs[ID][2])
 
-    def buy_sell_auto(self, code, number, category, action):
+    def buy_sell_auto(self, code, number, price, category, action):
         """
         Base function for buying or selling anything.
         categories = ['ETF', 'Stock', 'MMF', 'Bond']
@@ -437,48 +501,47 @@ class BrokerAccount(MoneyAccount):
             'MMF_buy': self.buy_MMF,
             'Bond_buy': self.buy_bonds,
             'ETF_sell': self.sell_ETF,
-            'Stock_buy': self.sell_stocks,
-            'MMF_buy': self.sell_MMF,
-            'Bond_buy': self.sell_bonds
+            'Stock_sell': self.sell_stocks,
+            'MMF_sell': self.sell_MMF,
+            'Bond_sell': self.sell_bonds
         }
 
         trans_function = switcher.get(category+'_'+action, '')
         trans_function(code, number)
 
         # 2. read the current price.
-        # TODO: historical price when this transaction happens
-        price = si.get_live_price(code.lower())
+        # price = si.get_live_price(code.lower())
         if action == 'sell':
             price *= -1
 
         # 3. update cash -= number * price
         self.cash -= price * number
 
-    def buy_ETF_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='ETF', action='buy')
+    def buy_ETF_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='ETF', action='buy')
 
-    def buy_stock_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='Stock', action='buy')
+    def buy_stock_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='Stock', action='buy')
 
-    def buy_MMF_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='MMF', action='buy')
+    def buy_MMF_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='MMF', action='buy')
 
-    def buy_bond_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='Bond', action='buy')
+    def buy_bond_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='Bond', action='buy')
 
-    def sell_ETF_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='ETF', action='sell')
+    def sell_ETF_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='ETF', action='sell')
 
-    def sell_stock_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='Stock', action='sell')
+    def sell_stock_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='Stock', action='sell')
 
-    def sell_MMF_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='MMF', action='sell')
+    def sell_MMF_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='MMF', action='sell')
 
-    def sell_bond_auto(self, code, number):
-        self.buy_sell_auto(code, number, category='Bond', action='sell')
+    def sell_bond_auto(self, code, number, price):
+        self.buy_sell_auto(code, number, price, category='Bond', action='sell')
 
-    def add_MMF(self, ID, full_name, number, expense_ratio):
+    def add_MMF(self, ID, full_name, number, expense_ratio, price):
         self._mmf[ID] = (full_name, number, expense_ratio)
 
     def get_MMF(self):

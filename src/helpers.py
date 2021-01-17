@@ -45,6 +45,14 @@ def merge_bank_logs(balances, cache_file='./log/balances_cache.csv',
     merge_logs(balances, cache_file, save_file)
 
 
+def merge_bank_logs_no_cache(cur_balance, pre_balances=None):
+    """
+    merge current balance with the existing balance sheets
+    """
+    return merge_logs_no_cache(cur_balance=cur_balance,
+                               pre_balances=pre_balances)
+
+
 def merge_retirement_logs(balances,
                           cache_file='./log/retire_balances_cache.csv',
                           save_file='./log/retire_balances.csv'):
@@ -80,10 +88,29 @@ def merge_logs(balances, cache_file, save_file):
 
     merged = reorg(merged)
     merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)
-    merged.to_csv(save_file)
-    merged.to_csv(cache_file)
+    merged.to_csv(save_file, index=False)
+    merged.to_csv(cache_file, index=False)
 
     print('file saved in ', save_file)
+
+
+def merge_logs_no_cache(cur_balance, pre_balances=None):
+    """
+    merge current balance
+    """
+    cur_balance.Date = pd.to_datetime(cur_balance.Date)
+    if pre_balances is None:
+        merged = cur_balance
+    else:
+        pre_balances.Date = pd.to_datetime(pre_balances.Date)
+
+        # only keep record before current
+        merged = pd.concat([pre_balances, cur_balance], axis=0,
+                           sort=False).fillna(0).reset_index(drop=True)
+
+    merged = reorg(merged)
+    merged.drop_duplicates(subset=['Date'], keep='last', inplace=True)
+    return merged
 
 
 def reorg(df_merge):

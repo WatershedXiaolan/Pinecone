@@ -31,8 +31,7 @@ def get_live_prices(codes):
     return data
 
 
-def save_prices(data, fn=r'/Users/xiaolan/Documents/repos/FinProject/ \
-                           local_src/static_prices.json'):
+def save_prices(data, fn=r'/Users/xiaolan/Documents/repos/FinProject/local_src/static_prices.json'):
 
     with open(fn, 'w') as fp:
         json.dump(data, fp)
@@ -41,7 +40,7 @@ def save_prices(data, fn=r'/Users/xiaolan/Documents/repos/FinProject/ \
 if __name__ == "__main__":
     pre_data = get_static_prices()
     codes = list(pre_data.keys())
-    data = get_live_prices(l)
+    data = get_live_prices(codes)
 
     # if can't get live price, replace with existing price
     for s, p in data.items():
