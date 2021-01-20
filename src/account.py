@@ -362,10 +362,13 @@ class BrokerAccount(MoneyAccount):
         available_tickers = prices.ticker.tolist()
         num_h_prices_entries = h_prices.shape[0]
 
+        for ticker, params in self.get_MMF().items():
+            position = params[1]
+            blc += position
+
         for get_p in [self.get_stocks,
                       self.get_ETF,
-                      self.get_bonds,
-                      self.get_MMF]:
+                      self.get_bonds]:
 
             for ticker, params in get_p().items():
                 position = params[1]
@@ -375,10 +378,16 @@ class BrokerAccount(MoneyAccount):
                     else:
                         # TODO: add read price and update
                         # historical price database
-                        new_price = si.get_data(ticker.lower(),
-                                                start_date=d,
-                                                end_date=d+timedelta(days=1)
-                                                )
+                        dateback = 0
+                        while True:
+                            try:
+                                new_price = si.get_data(ticker.lower(),
+                                                        start_date=d+timedelta(days=0-dateback),
+                                                        end_date=d+timedelta(days=1-dateback)
+                                                        )
+                                break
+                            except KeyError:
+                                dateback += 1
 
                         new_price['price'] = (new_price['open']
                                               + new_price['close'])/2
@@ -444,6 +453,11 @@ class BrokerAccount(MoneyAccount):
         return l_stocks + l_ETF + l_MMF + l_bonds
 
     def add_stocks(self, ID, full_name, number):
+        """
+        NOTE: this method will NOT update cash position
+        if want to update cash, please use buy_stocks following
+        this function, and set number=0 in this function
+        """
         self._stocks[ID] = (full_name, number)
 
     def get_stocks(self):
@@ -541,7 +555,7 @@ class BrokerAccount(MoneyAccount):
     def sell_bond_auto(self, code, number, price):
         self.buy_sell_auto(code, number, price, category='Bond', action='sell')
 
-    def add_MMF(self, ID, full_name, number, expense_ratio, price):
+    def add_MMF(self, ID, full_name, number, expense_ratio):
         self._mmf[ID] = (full_name, number, expense_ratio)
 
     def get_MMF(self):

@@ -1,12 +1,12 @@
-# Pinecore 松果理财
+# Pinecorn 松果理财
 
 Pinecore helps personal asseting management. It currently supports managing 
 
-- [ ] Bank account
-- [ ] Robo advisor account
-- [ ] broker account 
-- [ ] retirement account
-- [ ] gift card
+- [ ] Bank accounts
+- [ ] Robo advisor accounts
+- [ ] Broker accounts
+- [ ] Retirement accounts
+- [ ] Gift cards
 
 ### Getting start
 Please run "runme_example.py"

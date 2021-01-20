@@ -358,10 +358,12 @@ def get_positions(prices, l_brokers, l_robos, l_banks):
 
     for b in l_brokers:
         tot_stock_amt += sum([prices[k]*v[1]
-                              for k, v in b.get_stocks().items()])
-        tot_etf_amt += sum([prices[k]*v[1] for k, v in b.get_ETF().items()])
-        tot_bond_amt += sum([prices[k]*v[1] for k, v in b.get_bonds().items()])
-        tot_mmf_amt += sum([prices[k]*v[1] for k, v in b.get_MMF().items()])
+                              for k, v in b.get_stocks().items() if v[1] != 0])
+        tot_etf_amt += sum([prices[k]*v[1]
+                            for k, v in b.get_ETF().items() if v[1] != 0])
+        tot_bond_amt += sum([prices[k]*v[1]
+                             for k, v in b.get_bonds().items() if v[1] != 0])
+        tot_mmf_amt += sum([v[1] for k, v in b.get_MMF().items() if v[1] != 0])
         tot_cash_amt += b.cash
 
     for b in l_robos:
