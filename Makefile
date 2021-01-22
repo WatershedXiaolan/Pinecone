@@ -64,7 +64,7 @@ price: ## get prices
 	python ./src/get_prices.py
 
 run_xl: ## run xl's script
-	python runme_xl.py
+	python runme_xl_banks.py
 
 run_qm: ## run qm's script
 	python runme_qm.py
