@@ -28,7 +28,7 @@ colors = ['gold', 'mediumturquoise', 'lightgreen']
 fig = go.Figure(data=[
     go.Pie(labels=row.index.tolist(),
            values=[round(n, 0) for n in row.values.tolist()],
-           title='s')])
+           title='Total amount: '+str(balances.iloc[0, 1]))])
 fig.update_traces(
     hoverinfo='label+percent', textinfo='value', textfont_size=20,
     marker=dict(colors=colors, line=dict(color='#000000', width=2)))
