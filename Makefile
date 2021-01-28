@@ -49,7 +49,7 @@ clean-build: ## remove build artifacts
 	find . -name '*.egg' -exec rm -f {} +
 
 plots: ## make plots
-	python plots.py
+	python ./src/plots.py
 
 lint: ## check style with flake8
 	flake8 user_util tests
