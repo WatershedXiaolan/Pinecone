@@ -1,4 +1,4 @@
-# Pinecorn 松果理财
+# PineCone 松果理财
 
 Pinecore helps personal asseting management. It currently supports managing 
 
@@ -13,3 +13,7 @@ Please run "runme_example.py"
 
 ---------
 More documentation to be added 
+
+
+---------
+picture ref: https://watercoloraffair.com/how-to-paint-watercolor-pine-cones-the-easy-way/
