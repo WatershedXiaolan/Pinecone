@@ -474,6 +474,9 @@ class BrokerAccount(MoneyAccount):
         self._stocks[ID] = (self._stocks[ID][0], self._stocks[ID][1]-number)
 
     def add_ETF(self, ID, full_name, number, expense_ratio):
+        """
+        add_ETF(self, ID, full_name, number, expense_ratio)
+        """
         self._etfs[ID] = (full_name, number, expense_ratio)
 
     def get_ETF(self):
@@ -547,6 +550,9 @@ class BrokerAccount(MoneyAccount):
         self.buy_sell_auto(code, number, price, category='ETF', action='sell')
 
     def sell_stock_auto(self, code, number, price):
+        """
+        sell_stock_auto(self, code, number, price)
+        """
         self.buy_sell_auto(code, number, price, category='Stock', action='sell')
 
     def sell_MMF_auto(self, code, number, price):

@@ -1,68 +1,91 @@
 import sys
-from src.acts import *
+from src.account import *
 from src.aggregates import *
 from src.get_prices import *
 import pickle
+from datetime import timedelta
 from datetime import date
-from src.plots import * 
+#from src.plots import *
 from src.get_prices import get_static_prices
-from src.helpers import prep_log_folder, merge_bank_logs, merge_gc_logs, merge_retirement_logs, remove_cache
-import os, shutil
+from src.helpers import merge_bank_logs_no_cache
+from src.helpers import merge_retirement_logs
+from src.helpers import remove_cache
+from src.helpers import prep_log_folder
+import os
+import shutil
 
-# get new price
-prices = get_static_prices()
+# initialize accounts and look-up tables
+merged_balance = None
+h_prices_path='./log_example/historical_prices.csv'
 
-# clean log folder
-folder = r'/Users/xiaolan/Documents/repos/FinProject/log_example/'
-prep_log_folder(folder)
+# create accounts
+pinecone_checking = BankAccount(name='PINECONE BANK CHECKING',
+                              balance=10000,
+                              interest_rate=0.01,
+                              month_fee=0)
+pinecone_broker = BrokerAccount(name='PINECONE BROKER',
+                          balance=10000)
+pinecone_broker.stock_ratio = 0.8
+pinecone_robo = RoboAccount(name='PINECONE ROBO',
+                                balance=10000,
+                                interest_rate=0.05,
+                                annual_pct_fee=0.0025)
 
-# initialize data hosting structure
-l_banks, l_robos, l_brokers = [], [], []
+# add accounts into lists
+l_banks = [pinecone_checking]
+l_brokers = [pinecone_broker]
+l_robos = [pinecone_robo]
 
-# create a bank account
-a_bank = BankAccount(name='I AM A BANK', balance=100, interest_rate=0.01, month_fee=10)
-l_banks.append(a_bank)
+# -----------------------------------------------------------------------------
+#                            BEGIN TRANSACTIONS
+# -----------------------------------------------------------------------------
+today = date(2021, 1, 1)
+print(today.strftime("%Y-%m-%d"))
 
-# create a robo advisor account
-a_robo = RoboAccount(name='I AM A ROBO', balance=100, interest_rate=0.03, annual_pct_fee=0.0025)
-a_robo.stock_ratio=0.9
-l_robos.append(a_robo)
+# output balance
+balances = output_balance_with_history_price(l_brokers,
+                                             l_robos,
+                                             l_banks,
+                                             d=today,
+                                             h_prices_path=h_prices_path)
 
-# create a robo advisor account
-a_broker = BrokerAccount(name='I AM A BROKER', balance=100, interest_rate=0.015)
-l_brokers.append(a_broker)
+merged_balance = merge_bank_logs_no_cache(balances)
 
-# -------
-# beginning of transaction
-d=date(2021,1,1)
+# ---------------------------TRANSACTION DIVIDER-------------------------------
+today = date(2021, 1, 2)
+print(today.strftime("%Y-%m-%d"))
 
-balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
-merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+# transaction
+transfer(pinecone_checking, pinecone_broker, 1000)
 
-# -------
-# beginning of transaction
-d=date(2021,1,2)
-a_bank.make_deposit(100)
+# output balance
+balances = output_balance_with_history_price(l_brokers,
+                                             l_robos,
+                                             l_banks,
+                                             d=today,
+                                             h_prices_path=h_prices_path)
 
-balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
-merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+merged_balance = merge_bank_logs_no_cache(balances)
 
-# -------
-# beginning of transaction
-d=date(2021,1,3)
-a_bank.make_deposit(101)
+# ---------------------------TRANSACTION DIVIDER-------------------------------
+today = date(2021, 1, 3)
+print(today.strftime("%Y-%m-%d"))
 
-balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
-merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+# transaction
+pinecone_broker.add_ETF('SPY', 'SP500', 0, 0.0002)
+pinecone_broker.buy_ETF_auto('SPY', 10, 300)
 
-# -------
-# beginning of transaction
-d=date(2021,1,4)
-a_bank.make_deposit(200)
+# output balance
+balances = output_balance_with_history_price(l_brokers,
+                                             l_robos,
+                                             l_banks,
+                                             d=today,
+                                             h_prices_path=h_prices_path)
 
-balances = output_balance(l_brokers, l_robos, l_banks, prices, d=d)
-merge_bank_logs(balances, cache_file='./log_example/balances_cache.csv', save_file='./log_example/balances.csv')
+merged_balance = merge_bank_logs_no_cache(balances)
 
-#---ALL_END-------
-remove_cache(folder)
+# -----------------------------------------------------------------------------
+#                            BEGIN TRANSACTIONS
+# -----------------------------------------------------------------------------
 
+merged_balance.to_csv(('./lo_example/balance_banks.csv'), index=False)
