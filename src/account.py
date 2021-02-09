@@ -8,6 +8,7 @@ import time
 import pickle
 from yahoo_fin import stock_info as si
 import pandas as pd
+import os
 
 
 class Account:
@@ -344,7 +345,7 @@ class BrokerAccount(MoneyAccount):
         only for broker acct
         calculate past balance from all positions
         given a historical price sheet
-        TODO: if the price at a certain date is not available, update the date 
+        TODO: if the price at a certain date is not available, update the date
         """
         # proposed order
 
@@ -354,6 +355,14 @@ class BrokerAccount(MoneyAccount):
         # 3-1. if price not available: get price and update price list
         # 4. calculate balance
         # 5. update price set if needed
+
+        if not os.path.exists(h_prices_path):
+            prices = pd.DataFrame({
+                'price': [100],
+                'ticker': ['DUMMY'],
+                'date': [date(1900, 1, 1)]})
+
+            prices.to_csv(h_prices_path, index=False)
 
         h_prices = pd.read_csv(h_prices_path)
 
@@ -381,10 +390,11 @@ class BrokerAccount(MoneyAccount):
                         dateback = 0
                         while True:
                             try:
-                                new_price = si.get_data(ticker.lower(),
-                                                        start_date=d+timedelta(days=0-dateback),
-                                                        end_date=d+timedelta(days=1-dateback)
-                                                        )
+                                new_price = si.get_data(
+                                    ticker.lower(),
+                                    start_date=d+timedelta(days=0-dateback),
+                                    end_date=d+timedelta(days=1-dateback)
+                                    )
                                 break
                             except KeyError:
                                 dateback += 1

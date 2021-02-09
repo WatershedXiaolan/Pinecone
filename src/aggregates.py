@@ -80,9 +80,10 @@ def output_balance_with_history_price(l_brokers,
                                       l_robos,
                                       l_banks,
                                       d=date.today(),
-                                      h_prices_path=('/Users/xiaolan/Documents'
-                                                     '/repos/FinProject/local_src'
-                                                     '/historical_prices.csv')):
+                                      h_prices_path=(
+                                          '/Users/xiaolan/Documents'
+                                          '/repos/FinProject/local_src'
+                                          '/historical_prices.csv')):
     """
     get the historical balance as a DataFrame, given a list of accounts
     """

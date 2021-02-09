@@ -16,21 +16,23 @@ import shutil
 
 # initialize accounts and look-up tables
 merged_balance = None
-h_prices_path='./log_example/historical_prices.csv'
+h_prices_path = './log_example/historical_prices.csv'
 
 # create accounts
-pinecone_checking = BankAccount(name='PINECONE BANK CHECKING',
-                              balance=10000,
-                              interest_rate=0.01,
-                              month_fee=0)
-pinecone_broker = BrokerAccount(name='PINECONE BROKER',
-                          balance=10000)
+pinecone_checking = BankAccount(
+    name='PINECONE BANK CHECKING',
+    balance=10000,
+    interest_rate=0.01,
+    month_fee=0)
+pinecone_broker = BrokerAccount(
+    name='PINECONE BROKER',
+    balance=10000)
+pinecone_robo = RoboAccount(
+    name='PINECONE ROBO',
+    balance=10000,
+    interest_rate=0.05,
+    annual_pct_fee=0.0025)
 pinecone_broker.stock_ratio = 0.8
-pinecone_robo = RoboAccount(name='PINECONE ROBO',
-                                balance=10000,
-                                interest_rate=0.05,
-                                annual_pct_fee=0.0025)
-
 # add accounts into lists
 l_banks = [pinecone_checking]
 l_brokers = [pinecone_broker]
@@ -65,7 +67,7 @@ balances = output_balance_with_history_price(l_brokers,
                                              d=today,
                                              h_prices_path=h_prices_path)
 
-merged_balance = merge_bank_logs_no_cache(balances)
+merged_balance = merge_bank_logs_no_cache(balances, merged_balance)
 
 # ---------------------------TRANSACTION DIVIDER-------------------------------
 today = date(2021, 1, 3)
@@ -82,10 +84,10 @@ balances = output_balance_with_history_price(l_brokers,
                                              d=today,
                                              h_prices_path=h_prices_path)
 
-merged_balance = merge_bank_logs_no_cache(balances)
+merged_balance = merge_bank_logs_no_cache(balances, merged_balance)
 
 # -----------------------------------------------------------------------------
 #                            BEGIN TRANSACTIONS
 # -----------------------------------------------------------------------------
 
-merged_balance.to_csv(('./lo_example/balance_banks.csv'), index=False)
+merged_balance.to_csv(('./log_example/balance_banks.csv'), index=False)
