@@ -5,7 +5,7 @@ import numpy as np
 
 
 def get_static_prices(
-        fn=r'/Users/xiaolan/Documents/repos/FinProject/local_src/static_prices.json'):
+        fn=r'/Users/xiaolan/Documents/repos/PineCone/local_src/static_prices.json'):
     """
     Get pre-saved prices to calculate positions. This is to speed up
     position calculation by avoiding the time-consuming
@@ -31,7 +31,7 @@ def get_live_prices(codes):
     return data
 
 
-def save_prices(data, fn=r'/Users/xiaolan/Documents/repos/FinProject/local_src/static_prices.json'):
+def save_prices(data, fn=r'/Users/xiaolan/Documents/repos/PineCone/local_src/static_prices.json'):
 
     with open(fn, 'w') as fp:
         json.dump(data, fp)

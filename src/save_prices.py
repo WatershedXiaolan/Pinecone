@@ -18,5 +18,5 @@ if __name__ == '__main__':
                  'VTI': 160.13,
                  'VOO': 290.31,
                  'date': str(date.today())}
-    write_prices(r'/Users/xiaolan/Documents/repos/FinProject/ \
+    write_prices(r'/Users/xiaolan/Documents/repos/PineCone/ \
                  local_src/static_prices.json', price_set)

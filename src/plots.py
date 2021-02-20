@@ -8,6 +8,7 @@ from datetime import date
 from datetime import timedelta
 import os
 import webbrowser
+import sys
 
 display(HTML("<style>.container { width:100% !important; }</style>"))
 file = './log/balance_banks.html'
@@ -17,13 +18,13 @@ if os.path.exists(file):
     os.remove(file)
 
 # load data
-balances = pd.read_csv('./log/balance_banks.csv')
-
+# balances = pd.read_csv('./log/balance_banks.csv')
+balances = pd.read_csv(sys.argv[1])
 
 # pie chart
 row = balances.iloc[0, 2:5]
 
-colors = ['gold', 'mediumturquoise', 'lightgreen']
+colors = ['gold', 'lightgreen', 'mediumturquoise']
 
 fig = go.Figure(data=[
     go.Pie(labels=row.index.tolist(),
@@ -47,7 +48,9 @@ fig.add_trace(
         x=balances.Date,
         y=balances.Cash,
         name='Cash',
-        stackgroup='one'
+        stackgroup='one',
+        mode='markers',
+        marker_color=colors[0]
         ),
     secondary_y=False
 )
@@ -56,7 +59,9 @@ fig.add_trace(
         x=balances.Date,
         y=balances.Bond,
         name='Bond',
-        stackgroup='one'
+        stackgroup='one',
+        mode='markers',
+        marker_color=colors[2]
         ),
     secondary_y=False
 )
@@ -65,7 +70,9 @@ fig.add_trace(
         x=balances.Date,
         y=balances.Stock,
         name='Stock',
-        stackgroup='one'
+        stackgroup='one',
+        mode='markers',
+        marker_color=colors[1]
         ),
     secondary_y=False
 )
@@ -80,10 +87,10 @@ fig.add_trace(
 fig.update_yaxes(title_text="$", range=[0, 500000], secondary_y=False)
 fig.update_yaxes(title_text="S/(S+B) Ratio", secondary_y=True, range=[0, 1.0])
 fig.update_xaxes(range=[
-    pd.to_datetime(balances.Date.iloc[0])-timedelta(days=180),
-    pd.to_datetime(balances.Date.iloc[0])+timedelta(days=30)
+    pd.to_datetime(balances.Date.iloc[0])-timedelta(days=90),
+    pd.to_datetime(balances.Date.iloc[0])+timedelta(days=10)
     ])
-
+fig.update_layout(hovermode='x unified')
 with open(file, 'a') as f:
     f.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
 

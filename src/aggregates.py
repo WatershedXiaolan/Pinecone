@@ -82,7 +82,7 @@ def output_balance_with_history_price(l_brokers,
                                       d=date.today(),
                                       h_prices_path=(
                                           '/Users/xiaolan/Documents'
-                                          '/repos/FinProject/local_src'
+                                          '/repos/PineCone/local_src'
                                           '/historical_prices.csv')):
     """
     get the historical balance as a DataFrame, given a list of accounts
@@ -151,11 +151,11 @@ def output_balance_gc(accts, d=date.today()):
 
 
 def write_balance_gc(acct,
-                     dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log',
+                     dir_name=r'/Users/xiaolan/Documents/repos/PineCone/log',
                      filename='balances.csv'):
     """
     write balance to csv file.
-    The current/Users/xiaolan/Documents/repos/FinProject/scripts
+    The current/Users/xiaolan/Documents/repos/PineCone/scripts
     """
 
     f = path.join(dir_name, filename)
@@ -171,11 +171,11 @@ def write_balance_gc(acct,
 
 
 def write_balance(acct,
-                  dir_name=r'/Users/xiaolan/Documents/repos/FinProject/log',
+                  dir_name=r'/Users/xiaolan/Documents/repos/PineCone/log',
                   filename='balances.csv'):
     """
     write balance to csv file
-    The current/Users/xiaolan/Documents/repos/FinProject/scripts
+    The current/Users/xiaolan/Documents/repos/PineCone/scripts
     """
     f = path.join(dir_name, filename)
     if path.exists(f):

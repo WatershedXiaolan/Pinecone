@@ -338,7 +338,7 @@ class BrokerAccount(MoneyAccount):
     def get_past_balance(self,
                          d,
                          h_prices_path=('/Users/xiaolan/Documents'
-                                        '/repos/FinProject/local_src'
+                                        '/repos/PineCone/local_src'
                                         '/historical_prices.csv')):
 
         """
