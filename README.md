@@ -1,4 +1,4 @@
-# PineCone 松果理财
+# PineCone
 
 Pinecore helps personal asseting management. It currently supports managing 
 
